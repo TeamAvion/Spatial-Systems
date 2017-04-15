@@ -1,1 +1,4 @@
 itemGroup.spatialsystems=Spatial Systems
+tile.advancedFurnaceBlock_basic.name=Advanced Furnace
+tile.advancedFurnaceBlock_advanced.name=Elite Furnace
+tile.advancedFurnaceBlock_elite.name=Transcendent Furnace
