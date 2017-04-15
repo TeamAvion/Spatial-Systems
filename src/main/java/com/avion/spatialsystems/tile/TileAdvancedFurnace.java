@@ -3,17 +3,20 @@ package com.avion.spatialsystems.tile;
 import com.avion.spatialsystems.SpatialSystems;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityEgg;
 import net.minecraft.entity.projectile.EntitySpectralArrow;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.SlotFurnaceFuel;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import javax.annotation.Nonnull;
+
+import static net.minecraft.tileentity.TileEntityFurnace.getItemBurnTime;
 
 public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModifiable, IInventory, ITickable{
 
@@ -28,7 +31,7 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
      * Stack 1: Fuel
      * Stack 2: Output
      */
-    protected final NonNullList<ItemStack> stacks = NonNullList.withSize(3, ItemStack.EMPTY);
+    protected NonNullList<ItemStack> stacks = NonNullList.withSize(3, ItemStack.EMPTY);
     protected int cookTime = 0;
     protected int maxCookTime;
     protected int burnTime = 0;
@@ -44,6 +47,26 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
     protected boolean smeltItem(){
 
         return false;
+    }
+
+
+    public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+        stacks = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
+        ItemStackHelper.loadAllItems(compound, stacks);
+        itemMaxBurn = compound.getInteger("BurnTime");
+        cookTime = compound.getInteger("CookTime");
+        maxCookTime = compound.getInteger("CookTimeTotal");
+        //cookTime = getItemBurnTime(stacks.get(1));
+    }
+
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        super.writeToNBT(compound);
+        compound.setInteger("BurnTime", itemMaxBurn);
+        compound.setInteger("CookTime", cookTime);
+        compound.setInteger("CookTimeTotal", maxCookTime);
+        ItemStackHelper.saveAllItems(compound, stacks);
+        return compound;
     }
 
     @Override public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
@@ -70,10 +93,11 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
         ItemStack stack = stacks.get(index);
         ItemStack i = new ItemStack(stack.getItem(), Math.min(stack.getCount(), count));
         stack.shrink(i.getCount());
+        markDirty();
         return i;
     }
     @MethodsReturnNonnullByDefault @Override public ItemStack removeStackFromSlot(int index) { return decrStackSize(index, stacks.get(index).getCount()); }
-    @Override public void setInventorySlotContents(int index, ItemStack stack) { stacks.set(index, stack); }
+    @Override public void setInventorySlotContents(int index, ItemStack stack) { markDirty(); stacks.set(index, stack); }
     @Override public int getInventoryStackLimit() { return 64; }
 
     @Override
@@ -82,7 +106,7 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
     }
 
     @Override public void openInventory(EntityPlayer player) {
-        player.openGui(SpatialSystems.instance, SpatialSystems.GUI_FURNACE, getWorld(), getPos().getX(), getPos().getY(), getPos().getZ());
+        //player.openGui(SpatialSystems.instance, SpatialSystems.GUI_FURNACE, getWorld(), getPos().getX(), getPos().getY(), getPos().getZ());
     }
 
     @Override
@@ -120,7 +144,10 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
         if(!stacks.get(slot).getItem().equals(stack.getItem())) return stack;
         int i;
         stack.setCount(Math.min(0, (i=stack.getCount())-stack.getMaxStackSize()+stacks.get(slot).getCount()));
-        if(!simulate) stacks.get(slot).setCount(stacks.get(slot).getCount()+i-stack.getCount());
+        if(!simulate) {
+            stacks.get(slot).setCount(stacks.get(slot).getCount() + i - stack.getCount());
+            markDirty();
+        }
         return stack;
     }
 
@@ -130,13 +157,18 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
         if(stacks.get(slot).isEmpty()) return ItemStack.EMPTY;
         ItemStack s = getStackInSlot(slot);
         if (simulate) stacks.set(slot, s);
+        else markDirty();
         return s;
     }
 
+<<<<<<< HEAD
     //@Override
     public int getSlotLimit(int slot) {
         return !stacks.get(slot).isEmpty() ? stacks.get(slot).getMaxStackSize() : 64;
     }
+=======
+    @Override public int getSlotLimit(int slot) { return !stacks.get(slot).isEmpty() ? stacks.get(slot).getMaxStackSize() : 64; }
+>>>>>>> origin/master
 
     @Override public String getName() {
         return "Advanced Furnace";

@@ -14,7 +14,7 @@ public class GUIAdvancedFurnace extends GuiFurnace{
     public GUIAdvancedFurnace(InventoryPlayer player, TileAdvancedFurnace furnace){
         //super(new ContainerAdvancedFurnace(player, furnace));
         super(player, furnace);
-        inventorySlots = new ContainerAdvancedFurnace(player, furnace);
+        inventorySlots = new ContainerAdvancedFurnace(player, furnace); // Basically override half of what the superconstructor did
         tile = furnace;
     }
 

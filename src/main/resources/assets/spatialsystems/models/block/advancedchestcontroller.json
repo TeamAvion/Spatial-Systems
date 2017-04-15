@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "particle": "spatialsystems:blocks/advancedchestcontroller_face",
+    "down": "blocks/planks_oak",
+    "up": "blocks/planks_oak",
+    "north": "blocks/planks_oak",
+    "east": "blocks/planks_oak",
+    "south": "blocks/spatialsystems:blocks/advancedchestcontroller_face",
+    "west": "blocks/planks_oak"
+  }
+}
