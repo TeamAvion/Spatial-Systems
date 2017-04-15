@@ -50,10 +50,4 @@ public class ContainerAdvancedFurnace extends ContainerFurnace {
         int val1;
         if((Integer) Helper.getValue(name, this, ContainerFurnace.class)!=(val1=furnaceInventory.getField(val))) listener.sendProgressBarUpdate(this, val, val1);
     }
-
-    @Override
-    public void updateProgressBar(int id, int data) {
-        //super.updateProgressBar(id, data); //NOP
-        furnaceInventory.setField(id, data);
-    }
 }
