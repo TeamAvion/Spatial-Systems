@@ -31,7 +31,7 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
      */
     protected final ItemStack[] stacks = new ItemStack[3];
     protected int cookTime = 0;
-    protected final int maxCookTime;
+    protected int maxCookTime;
     protected int burnTime = 0;
     protected int itemMaxBurn;
 
@@ -84,24 +84,17 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
     }
 
     @Override
-    public int getField(int id) {
-        return 0;
-    }
+    public int getField(int id) { return id==FIELD_TIME?cookTime:id==FIELD_MAXTIME?maxCookTime:id==FIELD_BURN?burnTime:itemMaxBurn; }
 
     @Override
     public void setField(int id, int value) {
-
+        if(id==FIELD_TIME) cookTime = value;
+        else if(id==FIELD_MAXTIME) maxCookTime = value;
+        else if(id==FIELD_BURN) burnTime = value;
+        else if(id==FIELD_MAXBURN) itemMaxBurn = value;
     }
-
-    @Override
-    public int getFieldCount() {
-        return 0;
-    }
-
-    @Override
-    public void clear() {
-
-    }
+    @Override public int getFieldCount() { return 3; }
+    @Override public void clear() { for(int i = 0; i<stacks.length; ++i) stacks[i] = null; }
 
     @Nonnull
     @Override
