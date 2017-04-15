@@ -23,7 +23,6 @@ public class ModBlocks {
     public static void register() {
         GameRegistry.register(advancedFurnaceBlock = new AdvancedFurnaceBlock());
         GameRegistry.register(new ItemBlockMeta(advancedFurnaceBlock), advancedFurnaceBlock.getRegistryName());
-
         GameRegistry.registerTileEntity(TileAdvancedFurnace.class, "Advanced Furnace");
 
         register(advancedChestController = new AdvancedChestController());
