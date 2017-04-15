@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=down":  { "model": "spatialsystems:advancedchestcontroller", "x": 270 },
+    "facing=up":    { "model": "spatialsystems:advancedchestcontroller", "x": 90 },
+    "facing=north": { "model": "spatialsystems:advancedchestcontroller", "y": 180 },
+    "facing=south": { "model": "spatialsystems:advancedchestcontroller" },
+    "facing=west":  { "model": "spatialsystems:advancedchestcontroller", "y": 90 },
+    "facing=east":  { "model": "spatialsystems:advancedchestcontroller", "y": 270 }
+  }
+}

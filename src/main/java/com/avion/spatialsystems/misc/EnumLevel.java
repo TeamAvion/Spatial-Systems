@@ -7,9 +7,9 @@ public enum EnumLevel implements IStringSerializable {
     ADVANCED(1),
     ELITE(2);
 
-    private final int value;
+    private final int VALUE;
     EnumLevel(int value) {
-        this.value = value;
+        this.VALUE = value;
     }
 
     @Override
@@ -18,7 +18,7 @@ public enum EnumLevel implements IStringSerializable {
     }
 
     public int getValue() {
-        return value;
+        return VALUE;
     }
 
     public static EnumLevel getLevelFromValue(int value) {
