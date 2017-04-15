@@ -8,6 +8,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.SlotFurnaceFuel;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
@@ -32,10 +33,10 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
      * Stack 2: Output
      */
     protected NonNullList<ItemStack> stacks = NonNullList.withSize(3, ItemStack.EMPTY);
-    protected int cookTime = 0;
-    protected int maxCookTime;
-    protected int burnTime = 0;
-    protected int itemMaxBurn;
+    protected int cookTime = 0; // Current cook timer
+    protected int maxCookTime; // Time after cook starts that an item gets cooked
+    protected int burnTime = 0; // Current burn timer
+    protected int itemMaxBurn; // Burn timer stop/reset time (relative ticks)
 
     @Override
     public void update() {
@@ -44,8 +45,14 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
         }
     }
 
-    protected boolean smeltItem(){
+    protected boolean smeltPossible(){
+        return !stacks.get(0).isEmpty() && !(stacks.get(1).isEmpty() || burnTime!=itemMaxBurn) && !FurnaceRecipes.instance().getSmeltingResult(stacks.get(0)).isEmpty(); // Meh. Should work :P
+    }
 
+    protected boolean smeltItem(){
+        if(smeltPossible()){
+
+        }
         return false;
     }
 
@@ -79,10 +86,7 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
         return 3;
     }
     @Override public boolean isEmpty() {
-        for (ItemStack stack : stacks) {
-            if (!stack.isEmpty())
-                return false;
-        }
+        for (ItemStack stack : stacks) if (!stack.isEmpty()) return false;
         return true;
     }
     @Nonnull @Override public ItemStack getStackInSlot(int slot) { return stacks.get(slot); }
@@ -153,7 +157,7 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
 
     @Nonnull
     @Override
-    public ItemStack extractItem(int slot, int amount, boolean simulate) {
+    public ItemStack extractItem(int slot, int amount, boolean simulate){
         if(stacks.get(slot).isEmpty()) return ItemStack.EMPTY;
         ItemStack s = getStackInSlot(slot);
         if (simulate) stacks.set(slot, s);
@@ -161,19 +165,10 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
         return s;
     }
 
-<<<<<<< HEAD
-    //@Override
-    public int getSlotLimit(int slot) {
-        return !stacks.get(slot).isEmpty() ? stacks.get(slot).getMaxStackSize() : 64;
-    }
-=======
-    @Override public int getSlotLimit(int slot) { return !stacks.get(slot).isEmpty() ? stacks.get(slot).getMaxStackSize() : 64; }
->>>>>>> origin/master
+    @Override public int getSlotLimit(int slot){ return !stacks.get(slot).isEmpty() ? stacks.get(slot).getMaxStackSize() : 64; }
 
-    @Override public String getName() {
-        return "Advanced Furnace";
-    }
-    @Override public boolean hasCustomName() { return false; }
+    @Override public String getName(){ return "Advanced Furnace"; }
+    @Override public boolean hasCustomName(){ return false; }
 
     // According to multiple lab experiments, this adds >0,3 MB RAM usage which is quickly compressed into zRAM to use even less space
     // Unless you're running Minecraft on an ATMega328P-PU (or a potato), your computer can manage this. If you ARE running Minecraft on one of the aforementioned objects, this method is the least of your worries.
