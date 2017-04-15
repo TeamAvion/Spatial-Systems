@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Spatial-Systems.iml" filepath="$PROJECT_DIR$/Spatial-Systems.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Spatial-Systems_api.iml" filepath="$PROJECT_DIR$/.idea/modules/Spatial-Systems_api.iml" group="Spatial-Systems" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Spatial-Systems_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Spatial-Systems_main.iml" group="Spatial-Systems" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Spatial-Systems_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Spatial-Systems_test.iml" group="Spatial-Systems" />
     </modules>
   </component>
 </project>
