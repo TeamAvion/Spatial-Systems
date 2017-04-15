@@ -45,6 +45,7 @@ public class ContainerAdvancedFurnace extends ContainerFurnace {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     protected final void checkAndSend(IContainerListener listener, String name, int val){
         int val1;
         if((Integer) Helper.getValue(name, this, ContainerFurnace.class)!=(val1=furnaceInventory.getField(val))) {

@@ -1,14 +1,14 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
+  "modid": "spatialsystems",
+  "name": "Spatial Systems",
+  "description": "Everyday things are for everyday people. This mod offers the extraordinary for extraordinary people like you!",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authorList": ["Bread10", "ADeathlyTouch", "Tacomundu12", "xX_Penis_Xx"],
+  "credits": "The MOD OFF team for inspiring us to create this mod. Also for telling us not to create a meme mod which has inspired us to add hidden memes in the code :)",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
