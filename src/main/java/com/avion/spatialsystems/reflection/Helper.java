@@ -8,7 +8,7 @@ public final class Helper {
         try{
             Field f = from.getDeclaredField(name);
             f.setAccessible(true);
-            return f.get(null);
+            return f.get(on); // Whoopsie!
         }catch(Exception e){ e.printStackTrace(); }
         return null;
     }

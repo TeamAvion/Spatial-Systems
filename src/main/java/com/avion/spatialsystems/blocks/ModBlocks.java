@@ -2,11 +2,13 @@ package com.avion.spatialsystems.blocks;
 
 import com.avion.spatialsystems.items.ItemBlockMeta;
 import com.avion.spatialsystems.misc.EnumLevel;
+import com.avion.spatialsystems.tile.TileAdvancedFurnace;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 //Created by Bread10 at 08:23 on 15/04/2017
@@ -17,6 +19,8 @@ public class ModBlocks {
     public static void register() {
         GameRegistry.register(advancedFurnaceBlock = new AdvancedFurnaceBlock());
         GameRegistry.register(new ItemBlockMeta(advancedFurnaceBlock), advancedFurnaceBlock.getRegistryName());
+
+        GameRegistry.registerTileEntity(TileAdvancedFurnace.class, "Advanced Furnace");
     }
 
     public static void registerRenders() {

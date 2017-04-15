@@ -1,5 +1,6 @@
 package com.avion.spatialsystems;
 
+import com.avion.spatialsystems.gui.GUIHandler;
 import com.avion.spatialsystems.blocks.ModBlocks;
 import com.avion.spatialsystems.proxy.CommonProxy;
 import net.minecraft.creativetab.CreativeTabs;
@@ -10,13 +11,14 @@ import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 @Mod(modid = SpatialSystems.MODID, version = SpatialSystems.VERSION)
 public class SpatialSystems {
 
     public static final String MODID = "spatialsystems";
     public static final String VERSION = "1.0";
-    public static final int GUI_FURNACE = 'd' + 'a' + 'n' + 'k';
+    public static final int GUI_FURNACE = 'd' + 'a' + 'n' + 'k'; // Unique values, they said...
 
     public static final CreativeTabs TAB = new CreativeTabs("spatialsystems") {
         @Override
@@ -34,11 +36,12 @@ public class SpatialSystems {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         proxy.preInit();
+        NetworkRegistry.INSTANCE.registerGuiHandler(this, new GUIHandler()); // Memes are created here
     }
     
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        proxy.init();
+        proxy.init(); // Renders are created here
     }
 
 

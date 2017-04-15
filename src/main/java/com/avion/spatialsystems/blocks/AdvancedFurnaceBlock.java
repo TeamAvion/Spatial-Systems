@@ -2,19 +2,26 @@ package com.avion.spatialsystems.blocks;
 
 import com.avion.spatialsystems.SpatialSystems;
 import com.avion.spatialsystems.misc.EnumLevel;
+import com.avion.spatialsystems.tile.TileAdvancedFurnace;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
-
+import javax.annotation.Nullable;
+import static com.avion.spatialsystems.SpatialSystems.GUI_FURNACE;
+import static com.avion.spatialsystems.SpatialSystems.instance;
 import static com.avion.spatialsystems.blocks.Properties.LEVEL;
 
 //Created by Bread10 at 08:27 on 15/04/2017
@@ -60,4 +67,29 @@ public class AdvancedFurnaceBlock extends Block {
         return new ItemStack(this, 1, this.getMetaFromState(world.getBlockState(pos)));
     }
 
+    @Override
+    public boolean hasTileEntity(IBlockState state) {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createTileEntity(World world, IBlockState state) {
+        return new TileAdvancedFurnace(20); // Smelt speed of 160/20 = 8 ticks... or something... :/
+    }
+
+    @Override
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+
+        playerIn.openGui(instance, GUI_FURNACE, worldIn, pos.getX(), pos.getY(), pos.getZ());
+
+        return true;
+        //return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+    }
+
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        InventoryHelper.dropInventoryItems(worldIn, pos, (TileAdvancedFurnace) worldIn.getTileEntity(pos));
+        super.breakBlock(worldIn, pos, state);
+    }
 }

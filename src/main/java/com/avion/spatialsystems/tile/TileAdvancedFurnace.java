@@ -83,7 +83,9 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
         return true;
     }
 
-    @Override public void openInventory(EntityPlayer player) { player.openGui(SpatialSystems.instance, SpatialSystems.GUI_FURNACE, getWorld(), getPos().getX(), getPos().getY(), getPos().getZ()); }
+    @Override public void openInventory(EntityPlayer player) {
+        player.openGui(SpatialSystems.instance, SpatialSystems.GUI_FURNACE, getWorld(), getPos().getX(), getPos().getY(), getPos().getZ());
+    }
 
     @Override
     public void closeInventory(EntityPlayer player) {
