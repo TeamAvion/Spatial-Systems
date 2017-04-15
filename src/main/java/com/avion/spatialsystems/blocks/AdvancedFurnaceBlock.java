@@ -1,5 +1,6 @@
 package com.avion.spatialsystems.blocks;
 
+import com.avion.spatialsystems.SpatialSystems;
 import com.avion.spatialsystems.misc.EnumLevel;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -24,6 +25,7 @@ public class AdvancedFurnaceBlock extends Block {
         this.setUnlocalizedName("advancedFurnaceBlock");
         this.setRegistryName("advancedfurnaceblock");
         this.setDefaultState(this.blockState.getBaseState().withProperty(LEVEL, EnumLevel.BASIC));
+        this.setCreativeTab(SpatialSystems.TAB);
     }
 
     @Override
