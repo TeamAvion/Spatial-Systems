@@ -4,6 +4,8 @@ import com.avion.spatialsystems.SpatialSystems;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntitySpectralArrow;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.SlotFurnaceFuel;
@@ -42,16 +44,28 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
     public void update() {
         if(cookTime>=maxCookTime){
             cookTime = 0;
+            smeltItem();
         }
+        smeltItem(); // Implicit smelt-ability check
     }
 
     protected boolean smeltPossible(){
-        return !stacks.get(0).isEmpty() && !(stacks.get(1).isEmpty() || burnTime!=itemMaxBurn) && !FurnaceRecipes.instance().getSmeltingResult(stacks.get(0)).isEmpty(); // Meh. Should work :P
+        ItemStack i;
+        return
+                !stacks.get(0).isEmpty() &&
+                (!stacks.get(1).isEmpty() || burnTime!=itemMaxBurn) &&
+                !(i=FurnaceRecipes.instance().getSmeltingResult(stacks.get(0))).isEmpty() &&
+                (i.getItem().equals(stacks.get(2).getItem()) || stacks.get(2).isEmpty() || stacks.get(2).getItem().equals(Items.AIR)) &&
+                i.getCount()+(stacks.get(2).getItem()==Items.AIR?0:stacks.get(2).getCount())<=i.getMaxStackSize(); // Meh. Should work :P
     }
 
     protected boolean smeltItem(){
         if(smeltPossible()){
-
+            ItemStack i = stacks.get(2), tmp; // Temp variable give absolutely insignificant (yet existent) optimization :P
+            stacks.set(2, tmp=FurnaceRecipes.instance().getSmeltingResult(stacks.get(0)).copy());
+            tmp.setCount(tmp.getCount()+(i.getItem().equals(Items.AIR)?0:i.getCount()));
+            (tmp=stacks.get(0)).setCount(tmp.getCount()-1);
+            return true;
         }
         return false;
     }
