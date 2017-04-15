@@ -161,7 +161,14 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
         return s;
     }
 
+<<<<<<< HEAD
+    //@Override
+    public int getSlotLimit(int slot) {
+        return !stacks.get(slot).isEmpty() ? stacks.get(slot).getMaxStackSize() : 64;
+    }
+=======
     @Override public int getSlotLimit(int slot) { return !stacks.get(slot).isEmpty() ? stacks.get(slot).getMaxStackSize() : 64; }
+>>>>>>> origin/master
 
     @Override public String getName() {
         return "Advanced Furnace";
