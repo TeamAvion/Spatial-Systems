@@ -8,10 +8,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("ALL")
 public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModifiable, IInventory, ITickable{
 
     // Values defined for getting info from this class
@@ -29,43 +29,54 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
      * Stack 1: Fuel
      * Stack 2: Output
      */
-    protected final ItemStack[] stacks = new ItemStack[3];
+    protected final NonNullList<ItemStack> stacks = NonNullList.withSize(3, ItemStack.EMPTY);
     protected int cookTime = 0;
     protected int maxCookTime;
     protected int burnTime = 0;
     protected int itemMaxBurn;
 
-    public TileAdvancedFurnace(int complexity){ this.complexity = complexity; maxCookTime = 160/complexity; } // Calculate the cook time based on complexity
-
-
+    public TileAdvancedFurnace(int complexity){
+        this.complexity = complexity; maxCookTime = 160/complexity;
+    } // Calculate the cook time based on complexity
 
     @Override
     public void update() {
 
     }
 
-
-
-    @Override public void setStackInSlot(int slot, @Nonnull ItemStack stack) { setInventorySlotContents(slot, stack); }
-    @Override public int getSlots() { return 3; }
-    @Override public int getSizeInventory() { return 3; }
-    @Override public boolean isEmpty() { return (stacks[0]==null || stacks[0].isEmpty()) && (stacks[1]==null || stacks[1].isEmpty()) && (stacks[2]==null || stacks[2].isEmpty()); }
-    @Nonnull @Override public ItemStack getStackInSlot(int slot) { return stacks[slot]; }
+    @Override public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
+        setInventorySlotContents(slot, stack);
+    }
+    @Override public int getSlots() {
+        return 3;
+    }
+    @Override public int getSizeInventory() {
+        return 3;
+    }
+    @Override public boolean isEmpty() {
+        for (ItemStack stack : stacks) {
+            if (!stack.isEmpty())
+                return false;
+        }
+        return true;
+    }
+    @Nonnull @Override public ItemStack getStackInSlot(int slot) { return stacks.get(slot); }
 
     @MethodsReturnNonnullByDefault
     @Override
     public ItemStack decrStackSize(int index, int count) {
-        ItemStack i = new ItemStack(stacks[index].getItem(), Math.min(stacks[index].getCount(), count));
-        stacks[index].setCount(stacks[index].getCount()-i.getCount());
+        ItemStack stack = stacks.get(index);
+        ItemStack i = new ItemStack(stack.getItem(), Math.min(stack.getCount(), count));
+        stack.shrink(i.getCount());
         return i;
     }
-    @MethodsReturnNonnullByDefault @Override public ItemStack removeStackFromSlot(int index) { return decrStackSize(index, stacks[index].getCount()); }
-    @Override public void setInventorySlotContents(int index, ItemStack stack) { stacks[index] = stack; }
+    @MethodsReturnNonnullByDefault @Override public ItemStack removeStackFromSlot(int index) { return decrStackSize(index, stacks.get(index).getCount()); }
+    @Override public void setInventorySlotContents(int index, ItemStack stack) { stacks.set(index, stack); }
     @Override public int getInventoryStackLimit() { return 64; }
 
     @Override
     public boolean isUsableByPlayer(EntityPlayer player) {
-        return false;
+        return true;
     }
 
     @Override
@@ -80,7 +91,7 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
 
     @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
-        return (index==1 && (TileEntityFurnace.isItemFuel(stack) || SlotFurnaceFuel.isBucket(stack))) || (index==0 || index==2);
+        return (index == 1 && (TileEntityFurnace.isItemFuel(stack) || SlotFurnaceFuel.isBucket(stack))) || (index==0 || index==2);
     }
 
     @Override
@@ -93,8 +104,14 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
         else if(id==FIELD_BURN) burnTime = value;
         else if(id==FIELD_MAXBURN) itemMaxBurn = value;
     }
-    @Override public int getFieldCount() { return 3; }
-    @Override public void clear() { for(int i = 0; i<stacks.length; ++i) stacks[i] = null; }
+
+    @Override public int getFieldCount() {
+        return 3;
+    }
+
+    @Override public void clear() {
+        stacks.clear();
+    }
 
     @Nonnull
     @Override
@@ -105,13 +122,22 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
     @Nonnull
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if(stacks[slot]==null) return null;
+        if(stacks.get(slot).isEmpty()) return ItemStack.EMPTY;
         ItemStack s = getStackInSlot(slot);
-        if(simulate) stacks[slot] = s;
+        if (simulate) stacks.set(slot, s);
         return s;
     }
 
-    @Override public int getSlotLimit(int slot) { return stacks[slot]!=null?stacks[slot].getMaxStackSize():64; }
-    @Override public String getName() { return "Level "+complexity+" furnace"; }
-    @Override public boolean hasCustomName() { return false; }
+    @Override public int getSlotLimit(int slot) {
+        return !stacks.get(slot).isEmpty() ? stacks.get(slot).getMaxStackSize() : 64;
+    }
+
+    @Override public String getName() {
+        return "Level " + complexity + " furnace";
+    }
+
+    @Override public boolean hasCustomName() {
+        return false;
+    }
+
 }

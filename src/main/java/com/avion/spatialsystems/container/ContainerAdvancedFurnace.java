@@ -10,7 +10,6 @@ import static com.avion.spatialsystems.tile.TileAdvancedFurnace.FIELD_MAXTIME;
 import static com.avion.spatialsystems.tile.TileAdvancedFurnace.FIELD_BURN;
 import static com.avion.spatialsystems.tile.TileAdvancedFurnace.FIELD_MAXBURN;
 
-@SuppressWarnings("ConstantConditions")
 public class ContainerAdvancedFurnace extends ContainerFurnace {
 
     protected final IInventory furnaceInventory;
@@ -48,6 +47,8 @@ public class ContainerAdvancedFurnace extends ContainerFurnace {
 
     protected final void checkAndSend(IContainerListener listener, String name, int val){
         int val1;
-        if((Integer) Helper.getValue(name, this, ContainerFurnace.class)!=(val1=furnaceInventory.getField(val))) listener.sendProgressBarUpdate(this, val, val1);
+        if((Integer) Helper.getValue(name, this, ContainerFurnace.class)!=(val1=furnaceInventory.getField(val))) {
+            listener.sendProgressBarUpdate(this, val, val1);
+        }
     }
 }
