@@ -75,7 +75,7 @@ public class AdvancedFurnaceBlock extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(World world, IBlockState state) {
-        return new TileAdvancedFurnace(20); // Smelt speed of 160/20 = 8 ticks... or something... :/
+        return new TileAdvancedFurnace(); // Smelt speed of 160/20 = 8 ticks... or something... :/
     }
 
     @Override

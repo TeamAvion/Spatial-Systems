@@ -24,10 +24,6 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
     public static final int FIELD_MAXBURN = 0x03;
 
     /**
-     * Determines the characteristics of this tile. A higher value means a greater complexity.
-     */
-    protected final int complexity;
-    /**
      * Stack 0: Input
      * Stack 1: Fuel
      * Stack 2: Output
@@ -38,14 +34,16 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
     protected int burnTime = 0;
     protected int itemMaxBurn;
 
-    public TileAdvancedFurnace(int complexity){
-        this.complexity = complexity;
-        maxCookTime = 160/complexity;
-    } // Calculate the cook time based on complexity
-
     @Override
     public void update() {
+        if(cookTime>=maxCookTime){
+            cookTime = 0;
+        }
+    }
 
+    protected boolean smeltItem(){
+
+        return false;
     }
 
     @Override public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
@@ -140,10 +138,13 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
     }
 
     @Override public String getName() {
-        return "Level " + complexity + " furnace";
+        return "Advanced Furnace";
     }
     @Override public boolean hasCustomName() { return false; }
 
+    // According to multiple lab experiments, this adds >0,3 MB RAM usage which is quickly compressed into zRAM to use even less space
+    // Unless you're running Minecraft on an ATMega328P-PU (or a potato), your computer can manage this. If you ARE running Minecraft on one of the aforementioned objects, this method is the least of your worries.
+    // Quit whining about it
     public void executeDankMemes(){
         System.out.println("Memes have been activated! You told us not to include memes in the mod, so we've hidden them here!");
         System.out.println("" +
