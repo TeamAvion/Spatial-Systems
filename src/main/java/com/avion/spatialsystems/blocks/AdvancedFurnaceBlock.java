@@ -20,6 +20,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import javax.annotation.Nullable;
+import java.util.Random;
+
 import static com.avion.spatialsystems.SpatialSystems.GUI_FURNACE;
 import static com.avion.spatialsystems.SpatialSystems.instance;
 import static com.avion.spatialsystems.blocks.Properties.LEVEL;
@@ -33,6 +35,8 @@ public class AdvancedFurnaceBlock extends Block {
         this.setRegistryName("advancedfurnaceblock");
         this.setDefaultState(this.blockState.getBaseState().withProperty(LEVEL, EnumLevel.BASIC));
         this.setCreativeTab(SpatialSystems.TAB);
+        this.setHarvestLevel("pixkaxe", 1);
+        this.setHardness(1F);
     }
 
     @Override
@@ -91,5 +95,16 @@ public class AdvancedFurnaceBlock extends Block {
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         InventoryHelper.dropInventoryItems(worldIn, pos, (TileAdvancedFurnace) worldIn.getTileEntity(pos));
         super.breakBlock(worldIn, pos, state);
+    }
+
+    @Nullable
+    public Item getItemDropped(IBlockState state, Random rand, int fortune)
+    {
+        return Item.getItemFromBlock(ModBlocks.advancedFurnaceBlock);
+    }
+
+    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
+    {
+        return new ItemStack(ModBlocks.advancedFurnaceBlock);
     }
 }
