@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "level=basic": { "model": "spatialsystems:advancedfurnaceblock_basic" },
+    "level=advanced": { "model": "spatialsystems:advancedfurnaceblock_advanced" },
+    "level=elise": { "model": "spatialsystems:advancedfurnaceblock_elite" }
+  }
+}
