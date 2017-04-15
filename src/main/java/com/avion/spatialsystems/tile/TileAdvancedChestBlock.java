@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 //Created by Bread10 at 15:04 on 15/04/2017
 public class TileAdvancedChestBlock extends TileEntity {
 
-    private BlockPos controllerPos = new BlockPos(0, -1, 0);
+    private BlockPos controllerPos = BlockPosHelper.NULL;
 
     public BlockPos getControllerPos() {
         return controllerPos;

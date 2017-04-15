@@ -28,7 +28,7 @@ public class ModBlocks {
         register(advancedChestController = new AdvancedChestController());
         GameRegistry.registerTileEntity(TileAdvancedChest.class, "Advanced Chest");
 
-        registerRender(advancedChestBlock = new AdvancedChestBlock());
+        register(advancedChestBlock = new AdvancedChestBlock());
         GameRegistry.registerTileEntity(TileAdvancedChestBlock.class, "Advanced Chest Block");
     }
 
@@ -38,6 +38,8 @@ public class ModBlocks {
         }
 
         registerRender(advancedChestController);
+        registerRender(advancedChestBlock);
+
         registerRender(advancedFurnaceBlock);
     }
 
