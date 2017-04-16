@@ -5,15 +5,14 @@ import com.avion.spatialsystems.automation.Infer;
 import com.avion.spatialsystems.automation.NoMeta;
 import com.avion.spatialsystems.automation.NoTile;
 import com.avion.spatialsystems.items.ItemBlockMeta;
-import com.avion.spatialsystems.misc.EnumLevel;
 import com.avion.spatialsystems.tile.TileAdvancedChest;
 import com.avion.spatialsystems.tile.TileAdvancedChestBlock;
 import com.avion.spatialsystems.tile.TileAdvancedFurnace;
+import com.avion.spatialsystems.util.EnumLevel;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 

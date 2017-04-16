@@ -1,4 +1,4 @@
-package com.avion.spatialsystems.misc;
+package com.avion.spatialsystems.util;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -25,6 +25,10 @@ public class BlockPosHelper {
         int y = blockPosTag.getInteger("Y");
         int z = blockPosTag.getInteger("Z");
         return new BlockPos(x, y, z);
+    }
+
+    public static BlockPos copy(BlockPos pos) {
+        return new BlockPos(pos.getX(), pos.getY(), pos.getZ());
     }
 
 }

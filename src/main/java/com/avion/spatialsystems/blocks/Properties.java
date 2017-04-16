@@ -1,6 +1,6 @@
 package com.avion.spatialsystems.blocks;
 
-import com.avion.spatialsystems.misc.EnumLevel;
+import com.avion.spatialsystems.util.EnumLevel;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyEnum;
 

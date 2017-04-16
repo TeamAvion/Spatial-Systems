@@ -1,6 +1,6 @@
 package com.avion.spatialsystems.tile;
 
-import com.avion.spatialsystems.misc.BlockPosHelper;
+import com.avion.spatialsystems.util.BlockPosHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;

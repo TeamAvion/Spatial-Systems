@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.network.IGuiHandler;
 import javax.annotation.Nullable;
 
 public class GUIHandler implements IGuiHandler{
+
     @Nullable
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
@@ -18,6 +19,8 @@ public class GUIHandler implements IGuiHandler{
         switch(ID){
             case SpatialSystems.GUI_FURNACE:
                 return new ContainerAdvancedFurnace(player.inventory, (TileAdvancedFurnace) te);
+            case SpatialSystems.GUI_CHEST:
+
         }
         return null;
     }
@@ -29,6 +32,8 @@ public class GUIHandler implements IGuiHandler{
         switch (ID){
             case SpatialSystems.GUI_FURNACE:
                 return new GUIAdvancedFurnace(player.inventory, (TileAdvancedFurnace) te);
+            case SpatialSystems.GUI_CHEST:
+
         }
         return null;
     }

@@ -1,6 +1,6 @@
 package com.avion.spatialsystems.items;
 
-import com.avion.spatialsystems.misc.EnumLevel;
+import com.avion.spatialsystems.util.EnumLevel;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;

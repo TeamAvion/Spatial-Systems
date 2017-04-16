@@ -1,4 +1,4 @@
-package com.avion.spatialsystems.misc;
+package com.avion.spatialsystems.util;
 
 import net.minecraft.util.IStringSerializable;
 
