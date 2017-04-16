@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.Arrays;
 
 //Created by Bread10 at 09:08 on 16/04/2017
-public class LogHelper {
+public final class LogHelper {
 
     private static Logger logger;
 

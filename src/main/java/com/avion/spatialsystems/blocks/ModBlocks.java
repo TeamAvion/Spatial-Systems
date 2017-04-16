@@ -13,6 +13,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
@@ -48,12 +49,9 @@ public class ModBlocks {
         Automate a;
         for(Field f : ModBlocks.class.getDeclaredFields())
             if((a=f.getAnnotation(Automate.class))!=null && Block.class.isAssignableFrom(f.getType()) && Modifier.isStatic(f.getModifiers()))
-                try{
-                    if(a.meta()!=NoMeta.class)
-                        for(Enum<?> e : (Enum<?>[]) a.meta().getDeclaredMethod("values").invoke(null))
-                            registerRender((Block)f.get(null), e.ordinal());
-                }catch(Exception e){ e.printStackTrace(); }
-            else try{ registerRender((Block)f.get(null), 0); }catch(Exception e){ e.printStackTrace(); }
+                if(a.meta()!=NoMeta.class)
+                    try{ for(Enum<?> e : (Enum<?>[]) a.meta().getDeclaredMethod("values").invoke(null)) registerRender((Block)f.get(null), e.ordinal()); }catch(Exception e){ e.printStackTrace(); }
+                else try{ registerRender((Block)f.get(null), 0); }catch(Exception e){ e.printStackTrace(); }
     }
 
     private static void registerRender(Block block, int meta) {

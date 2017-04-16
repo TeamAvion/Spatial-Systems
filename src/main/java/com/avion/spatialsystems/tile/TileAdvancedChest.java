@@ -30,7 +30,8 @@ public class TileAdvancedChest extends TileEntity {
     public void findMultiBlockStructure() {
         EnumFacing blockFacing = this.getWorld().getBlockState(this.getPos()).getValue(Properties.FACING);
         for (EnumFacing f : MiscHelper.exceptArray(FacingHelper.VALUES, blockFacing)) {
-            if (this.getWorld().getBlockState(this.getPos().offset(f)).getBlock() != ModBlocks.advancedChestBlock) {
+            LogHelper.info(f.getName()+" -> "+this.getWorld().getBlockState(this.getPos().offset(f)).getBlock().getLocalizedName().equals(ModBlocks.advancedChestBlock));
+            if (!this.getWorld().getBlockState(this.getPos().offset(f)).getBlock().equals(ModBlocks.advancedChestBlock)) {
                 structureNotFound();
                 return;
             }

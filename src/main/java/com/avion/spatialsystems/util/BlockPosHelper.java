@@ -4,7 +4,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 
 //Created by Bread10 at 15:14 on 15/04/2017
-public class BlockPosHelper {
+public final class BlockPosHelper {
 
     public static final BlockPos NULL = new BlockPos(0, -1, 0);
 

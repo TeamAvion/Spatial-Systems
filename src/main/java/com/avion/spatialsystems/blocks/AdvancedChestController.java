@@ -26,10 +26,8 @@ public class AdvancedChestController extends Block implements ITileEntityProvide
 
     public AdvancedChestController(){
         super(Material.WOOD);
-        this.setUnlocalizedName("advancedChestController");
-        this.setRegistryName("advancedchestcontoller");
-        this.setCreativeTab(SpatialSystems.TAB);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.SOUTH));
+        setUnlocalizedName("advancedChestController").setCreativeTab(SpatialSystems.TAB).setRegistryName("advancedchestcontroller");
+        setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.SOUTH));
     }
 
     @Nullable

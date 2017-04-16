@@ -3,6 +3,7 @@
     "level=basic": { "model": "spatialsystems:advancedfurnaceblock_basic" },
     "level=advanced": { "model": "spatialsystems:advancedfurnaceblock_advanced" },
     "level=elite": { "model": "spatialsystems:advancedfurnaceblock_elite" },
-    "inventory": { "model": "spatialsystems:advancedfurnaceblock_basic" }
+    "inventory": { "model": "spatialsystems:advancedfurnaceblock_basic" },
+    "normal": { "model":"spatialsystems:advancedchestcontroller" }
   }
 }

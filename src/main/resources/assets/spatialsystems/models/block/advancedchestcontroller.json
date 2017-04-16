@@ -6,7 +6,7 @@
     "up": "blocks/planks_oak",
     "north": "blocks/planks_oak",
     "east": "blocks/planks_oak",
-    "south": "blocks/spatialsystems:blocks/advancedchestcontroller_face",
+    "south": "spatialsystems:blocks/advancedchestcontroller_face",
     "west": "blocks/planks_oak"
   }
 }
