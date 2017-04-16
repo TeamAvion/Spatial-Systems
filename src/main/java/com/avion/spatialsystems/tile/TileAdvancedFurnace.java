@@ -1,10 +1,8 @@
 package com.avion.spatialsystems.tile;
 
-import com.avion.spatialsystems.SpatialSystems;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntitySpectralArrow;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
@@ -16,10 +14,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import javax.annotation.Nonnull;
-
-import static net.minecraft.tileentity.TileEntityFurnace.getItemBurnTime;
 
 public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModifiable, IInventory, ITickable{
 
@@ -36,38 +34,47 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
      */
     protected NonNullList<ItemStack> stacks = NonNullList.withSize(3, ItemStack.EMPTY);
     protected int cookTime = 0; // Current cook timer
-    protected int maxCookTime; // Time after cook starts that an item gets cooked
+    protected int maxCookTime = 100; // Time after cook starts that an item gets cooked
     protected int burnTime = 0; // Current burn timer
-    protected int itemMaxBurn; // Burn timer stop/reset time (relative ticks)
+    protected int itemMaxBurn = -1; // Burn timer stop/reset time (relative ticks)
+    protected boolean isSmelting = false;
 
     @Override
     public void update() {
-        if(cookTime>=maxCookTime){
+
+        ItemStack i;
+
+        if(!isSmelting && (isSmelting=smeltPossible())){
             cookTime = 0;
+        }else if(smeltPossible() && cookTime >= maxCookTime){
             smeltItem();
+            cookTime = 0;
+            isSmelting = false;
         }
-        smeltItem(); // Implicit smelt-ability check
+
+        // Handle fuel
+        if(burnTime>=itemMaxBurn && TileEntityFurnace.isItemFuel(i=stacks.get(1)) && isSmelting){
+           itemMaxBurn = TileEntityFurnace.getItemBurnTime(i);
+           burnTime = 0;
+           i.setCount(i.getCount()-1);
+        }else burnTime+=2;
     }
 
     protected boolean smeltPossible(){
         ItemStack i;
         return
                 !stacks.get(0).isEmpty() &&
-                (!stacks.get(1).isEmpty() || burnTime!=itemMaxBurn) &&
+                (TileEntityFurnace.isItemFuel(stacks.get(1)) || burnTime<itemMaxBurn) &&
                 !(i=FurnaceRecipes.instance().getSmeltingResult(stacks.get(0))).isEmpty() &&
                 (i.getItem().equals(stacks.get(2).getItem()) || stacks.get(2).isEmpty() || stacks.get(2).getItem().equals(Items.AIR)) &&
                 i.getCount()+(stacks.get(2).getItem()==Items.AIR?0:stacks.get(2).getCount())<=i.getMaxStackSize(); // Meh. Should work :P
     }
 
-    protected boolean smeltItem(){
-        if(smeltPossible()){
-            ItemStack i = stacks.get(2), tmp; // Temp variable give absolutely insignificant (yet existent) optimization :P
-            stacks.set(2, tmp=FurnaceRecipes.instance().getSmeltingResult(stacks.get(0)).copy());
-            tmp.setCount(tmp.getCount()+(i.getItem().equals(Items.AIR)?0:i.getCount()));
-            (tmp=stacks.get(0)).setCount(tmp.getCount()-1);
-            return true;
-        }
-        return false;
+    protected void smeltItem(){
+        ItemStack i = stacks.get(2), tmp; // Temp variable give absolutely insignificant (yet existent) optimization :P
+        stacks.set(2, tmp=FurnaceRecipes.instance().getSmeltingResult(stacks.get(0)).copy());
+        tmp.setCount(tmp.getCount()+(i.getItem().equals(Items.AIR)?0:i.getCount()));
+        (tmp=stacks.get(0)).setCount(tmp.getCount()-1);
     }
 
 
@@ -75,6 +82,7 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
         super.readFromNBT(compound);
         stacks = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
         ItemStackHelper.loadAllItems(compound, stacks);
+        burnTime = compound.getInteger("CBurn");
         itemMaxBurn = compound.getInteger("BurnTime");
         cookTime = compound.getInteger("CookTime");
         maxCookTime = compound.getInteger("CookTimeTotal");
@@ -83,6 +91,7 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
 
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
+        compound.setInteger("CBurn", burnTime);
         compound.setInteger("BurnTime", itemMaxBurn);
         compound.setInteger("CookTime", cookTime);
         compound.setInteger("CookTimeTotal", maxCookTime);

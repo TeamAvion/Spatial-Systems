@@ -1,0 +1,5 @@
+itemGroup.spatialsystems=Rumsystem
+tile.advancedFurnaceBlock_basic.name=Avancerad Smältugn
+tile.advancedFurnaceBlock_advanced.name=Elit Smältugn
+tile.advancedFurnaceBlock_elite.name=Överlägsen Smältugn
+tile.advancedChestBlock.name=Avancerad Kista

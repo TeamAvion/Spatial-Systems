@@ -5,7 +5,13 @@ import com.avion.spatialsystems.reflection.Helper;
 import com.avion.spatialsystems.tile.TileAdvancedFurnace;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiFurnace;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+
+import java.util.Arrays;
 
 public class GUIAdvancedFurnace extends GuiFurnace{
 
@@ -20,9 +26,7 @@ public class GUIAdvancedFurnace extends GuiFurnace{
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        //super.drawGuiContainerForegroundLayer(mouseX, mouseY); // NOP
-        fontRendererObj.drawString(tile.getName(), 8, 6, 0xFF0088);
-        //LEL I <3 reflection
+        fontRendererObj.drawString(tile.getName(), 8, 6, 0xFF0088); // Top left label
         this.fontRendererObj.drawString(((InventoryPlayer)Helper.getValue("playerInventory", this, GuiFurnace.class)).getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
     }
 }
