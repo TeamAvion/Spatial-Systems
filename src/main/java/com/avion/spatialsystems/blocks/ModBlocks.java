@@ -27,6 +27,7 @@ public class ModBlocks {
     public static @Automate(tile = TileAdvancedChest.class, name = "Advanced Chest")            AdvancedChestController advancedChestController;
     public static @Automate(tile = TileAdvancedChestBlock.class, name = "Advanced Chest Block") AdvancedChestBlock advancedChestBlock;
 
+
     public static void register() {
         // Automation
         Automate a;
@@ -53,24 +54,13 @@ public class ModBlocks {
                             registerRender((Block)f.get(null), e.ordinal());
                 }catch(Exception e){ e.printStackTrace(); }
             else try{ registerRender((Block)f.get(null), 0); }catch(Exception e){ e.printStackTrace(); }
-
-        /*
-        for (EnumLevel level : EnumLevel.values()) {
-            registerRender(advancedFurnaceBlock, level.getValue());
-        }
-
-        registerRender(advancedChestController);
-        registerRender(advancedChestBlock);
-
-        registerRender(advancedFurnaceBlock);
-        registerRender(advancedChestBlock);
-        */
     }
 
-    private static void registerRender(Block block) { registerRender(block, 0); }
-
     private static void registerRender(Block block, int meta) {
-        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(block), meta, new ModelResourceLocation(block.getRegistryName(), "inventory"));
+        assert block.getRegistryName()==null : block.toString()+" : "+meta;
+        try{
+            Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(block), meta, new ModelResourceLocation(block.getRegistryName(), "inventory"));
+        }catch(Exception e){ e.printStackTrace(); }
     }
 
 }

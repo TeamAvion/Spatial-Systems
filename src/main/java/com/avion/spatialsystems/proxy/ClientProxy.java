@@ -1,7 +1,7 @@
 package com.avion.spatialsystems.proxy;
 
 import com.avion.spatialsystems.blocks.ModBlocks;
-import com.avion.spatialsystems.reflection.Helper;
+import com.avion.spatialsystems.util.RefHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.resources.Locale;
 
@@ -14,7 +14,7 @@ public class ClientProxy extends CommonProxy {
     public void init(){
         super.init();
         ModBlocks.registerRenders();
-        Map<String, String> localized = (Map<String, String>) Helper.getValue("properties", Helper.getValue("i18nLocale", null, I18n.class), Locale.class);
+        Map<String, String> localized = (Map<String, String>) RefHelper.getValue("properties", RefHelper.getValue("i18nLocale", null, I18n.class), Locale.class);
     }
 
 }

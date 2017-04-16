@@ -1,6 +1,6 @@
 package com.avion.spatialsystems.container;
 
-import com.avion.spatialsystems.reflection.Helper;
+import com.avion.spatialsystems.util.RefHelper;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
@@ -48,7 +48,7 @@ public class ContainerAdvancedFurnace extends ContainerFurnace {
     @SuppressWarnings("ConstantConditions")
     protected final void checkAndSend(IContainerListener listener, String name, int val){
         int val1;
-        if((Integer) Helper.getValue(name, this, ContainerFurnace.class)!=(val1=furnaceInventory.getField(val))) {
+        if((Integer) RefHelper.getValue(name, this, ContainerFurnace.class)!=(val1=furnaceInventory.getField(val))) {
             listener.sendProgressBarUpdate(this, val, val1);
         }
     }

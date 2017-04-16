@@ -1,14 +1,14 @@
-package com.avion.spatialsystems.reflection;
+package com.avion.spatialsystems.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public final class Helper {
+public final class RefHelper {
     public static Object getValue(String name, Object on, Class<?> from){
         try{
             Field f = from.getDeclaredField(name);
             f.setAccessible(true);
-            return f.get(on); // Whoopsie!
+            return f.get(on);
         }catch(Exception e){ e.printStackTrace(); }
         return null;
     }
@@ -25,5 +25,16 @@ public final class Helper {
             }
             else f.set(on, value);
         }catch(Exception e){ e.printStackTrace(); }
+    }
+
+    public static boolean isNestedClass(Object o){ return getEnclosingReference(o, false)!=null; }
+    public static Object getEnclosingReference(Object o){ return getEnclosingReference(o, true); }
+
+    private static Object getEnclosingReference(Object nestedClass, boolean error){
+        try{
+            Field f = nestedClass.getClass().getDeclaredField("this$0");
+            f.setAccessible(true);
+            return f.get(nestedClass);
+        }catch(Exception e){ if(error) e.printStackTrace(); return null; }
     }
 }

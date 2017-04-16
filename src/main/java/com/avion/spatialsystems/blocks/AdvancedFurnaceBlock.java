@@ -46,12 +46,12 @@ public class AdvancedFurnaceBlock extends Block {
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(LEVEL, EnumLevel.getLevelFromValue(meta));
+        return getDefaultState().withProperty(LEVEL, EnumLevel.values()[meta]);
     }
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        return ((EnumLevel) state.getValue(LEVEL)).getValue();
+        return ((EnumLevel) state.getValue(LEVEL)).ordinal();
     }
 
     @Override
@@ -69,26 +69,6 @@ public class AdvancedFurnaceBlock extends Block {
     @Override
     public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
         return new ItemStack(this, 1, this.getMetaFromState(world.getBlockState(pos)));
-    }
-
-    @Override
-    public boolean hasTileEntity(IBlockState state) {
-        return true;
-    }
-
-    @Nullable
-    @Override
-    public TileEntity createTileEntity(World world, IBlockState state) {
-        return new TileAdvancedFurnace(); // Smelt speed of 160/20 = 8 ticks... or something... :/
-    }
-
-    @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-
-        playerIn.openGui(instance, GUI_FURNACE, worldIn, pos.getX(), pos.getY(), pos.getZ());
-
-        return true;
-        //return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
     }
 
     @Override
