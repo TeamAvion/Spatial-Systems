@@ -9,7 +9,6 @@ import net.minecraft.util.math.BlockPos;
 //Created by Bread10 at 10:20 on 15/04/2017
 public class TileAdvancedChest extends TileEntity {
 
-    private boolean isFormed = false;
     private BlockPos bottomNorthWestCorner = BlockPosHelper.NULL;
     private int dimension = 0;
 
@@ -25,7 +24,6 @@ public class TileAdvancedChest extends TileEntity {
             }
         }
         if (airBlocks > 1) {
-            isFormed = false;
             bottomNorthWestCorner = BlockPosHelper.NULL;
             dimension = 0;
             return;

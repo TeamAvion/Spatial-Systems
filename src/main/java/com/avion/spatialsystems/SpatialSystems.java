@@ -2,6 +2,7 @@ package com.avion.spatialsystems;
 
 import com.avion.spatialsystems.gui.GUIHandler;
 import com.avion.spatialsystems.blocks.ModBlocks;
+import com.avion.spatialsystems.misc.LogHelper;
 import com.avion.spatialsystems.proxy.CommonProxy;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -36,6 +37,7 @@ public class SpatialSystems {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        LogHelper.setLogger(event.getModLog());
         proxy.preInit();
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new GUIHandler()); // Memes are created here
     }
