@@ -9,6 +9,7 @@ import com.avion.spatialsystems.tile.TileAdvancedChest;
 import com.avion.spatialsystems.tile.TileAdvancedChestBlock;
 import com.avion.spatialsystems.tile.TileAdvancedFurnace;
 import com.avion.spatialsystems.util.EnumLevel;
+import com.avion.spatialsystems.util.MBStruct;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -20,6 +21,8 @@ import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import static com.avion.spatialsystems.util.MBStruct.WLD;
+
 //Created by Bread10 at 08:23 on 15/04/2017
 public class ModBlocks {
 
@@ -27,7 +30,22 @@ public class ModBlocks {
     public static @Automate(tile = TileAdvancedFurnace.class, name = "Advanced Furnace")        AdvancedFurnaceController advancedFurnaceController;
     public static @Automate(tile = TileAdvancedChest.class, name = "Advanced Chest")            AdvancedChestController advancedChestController;
     public static @Automate(tile = TileAdvancedChestBlock.class, name = "Advanced Chest Block") AdvancedChestBlock advancedChestBlock;
-
+    public static final char PMC = 'b';
+    public static final MBStruct chestMultiBlock = new MBStruct()
+            .addLayer(0, new MBStruct.Plane(1, 1) // Define first layer (where controller is placed)
+                    .addPlane(
+                            new char[]{PMC, PMC, PMC},
+                            new char[]{PMC, WLD, PMC},
+                            new char[]{PMC, PMC, PMC}
+                    )
+            ).addLayer(1, new MBStruct.Plane(1, 1) // Create next layer (behind layer 0)
+                    .addPlane(
+                            new char[]{PMC, PMC, PMC},
+                            new char[]{PMC, PMC, PMC},
+                            new char[]{PMC, PMC, PMC}
+                    )
+            ).addLayer(2, 1).registerMapping(PMC, advancedChestBlock); // Copy layer 1 to layer 2
+    public static final MBStruct furnaceMultiBlock = chestMultiBlock.copy().registerMapping(PMC, advancedFurnaceBlock); // Exactly the same as above except different mapping for primary mapping character
 
     public static void register() {
         // Automation
@@ -55,7 +73,7 @@ public class ModBlocks {
     }
 
     private static void registerRender(Block block, int meta) {
-        assert block.getRegistryName()==null : block.toString()+" : "+meta;
+        if(block.getRegistryName()==null) throw new AssertionError("Block \""+block.getUnlocalizedName()+"\" has no registry name!");
         try{
             Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(block), meta, new ModelResourceLocation(block.getRegistryName(), "inventory"));
         }catch(Exception e){ e.printStackTrace(); }

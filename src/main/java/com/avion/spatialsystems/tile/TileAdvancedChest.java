@@ -1,12 +1,16 @@
 package com.avion.spatialsystems.tile;
 
-import com.avion.spatialsystems.util.BlockPosHelper;
+import com.avion.spatialsystems.blocks.ModBlocks;
+import com.avion.spatialsystems.blocks.Properties;
+import com.avion.spatialsystems.util.*;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 
@@ -17,7 +21,7 @@ public class TileAdvancedChest extends TileEntity {
 
     private NonNullList<ItemStack> inventory = NonNullList.withSize(27 * 9, ItemStack.EMPTY);
 
-    private BlockPos bottomNorthWestCorner = BlockPosHelper.NULL;
+    private BlockPos bottomNorthWestCorner = WorldHelper.NULL;
     private int dimension = 0;
 
     @Override
