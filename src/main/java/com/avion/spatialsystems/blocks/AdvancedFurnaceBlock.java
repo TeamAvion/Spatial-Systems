@@ -35,7 +35,7 @@ public class AdvancedFurnaceBlock extends Block {
         this.setRegistryName("advancedfurnaceblock");
         this.setDefaultState(this.blockState.getBaseState().withProperty(LEVEL, EnumLevel.BASIC));
         this.setCreativeTab(SpatialSystems.TAB);
-        this.setHarvestLevel("pixkaxe", 1);
+        this.setHarvestLevel("pickaxe", 1);
         this.setHardness(1F);
     }
 
@@ -71,18 +71,14 @@ public class AdvancedFurnaceBlock extends Block {
         return new ItemStack(this, 1, this.getMetaFromState(world.getBlockState(pos)));
     }
 
-    @Override
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        InventoryHelper.dropInventoryItems(worldIn, pos, (TileAdvancedFurnace) worldIn.getTileEntity(pos));
-        super.breakBlock(worldIn, pos, state);
-    }
-
     @Nullable
+    @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return Item.getItemFromBlock(ModBlocks.advancedFurnaceBlock);
     }
 
+    @Override
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
         return new ItemStack(ModBlocks.advancedFurnaceBlock);

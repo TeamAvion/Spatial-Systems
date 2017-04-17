@@ -11,10 +11,10 @@ public final class LogHelper {
     private static Logger logger;
 
     public static void setLogger(Logger log) { logger = log; }
-    public static void log(Level level, Object message) { logger.log(level, ">>> " + message.toString()); }
-    public static void info(Object message) { log(Level.INFO, message); }
-    public static void warning(Object message) { log(Level.WARN, message); }
-    public static void error(Object message) { log(Level.ERROR, message); }
+    public static void log(Level level, String message) { logger.log(level, ">>> " + message); }
+    public static void info(String message) { log(Level.INFO, message); }
+    public static void warning(String message) { log(Level.WARN, message); }
+    public static void error(String message) { log(Level.ERROR, message); }
     public static <T> void array(Level level, T[] array) { log(level, Arrays.toString(array)); }
 
 }

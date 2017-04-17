@@ -1,6 +1,6 @@
 package com.avion.spatialsystems.tile;
 
-import com.avion.spatialsystems.util.WorldHelper;
+import com.avion.spatialsystems.util.BlockPosHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 //Created by Bread10 at 15:04 on 15/04/2017
 public class TileAdvancedChestBlock extends TileEntity {
 
-    private BlockPos controllerPos = WorldHelper.NULL;
+    private BlockPos controllerPos = BlockPosHelper.NULL;
 
     public BlockPos getControllerPos() {
         return controllerPos;
@@ -42,14 +42,14 @@ public class TileAdvancedChestBlock extends TileEntity {
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
 
-        controllerPos = WorldHelper.readBlockPosFromNBT(compound, "controllerPos");
+        controllerPos = BlockPosHelper.readBlockPosFromNBT(compound, "controllerPos");
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
 
-        WorldHelper.writeBlockPosToNBT(compound, "controllerPos", controllerPos);
+        BlockPosHelper.writeBlockPosToNBT(compound, "controllerPos", controllerPos);
 
         return compound;
     }

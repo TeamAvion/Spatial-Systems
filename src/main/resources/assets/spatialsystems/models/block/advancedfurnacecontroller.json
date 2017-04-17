@@ -1,6 +1,12 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "blocks/cobblestone"
+    "particle": "spatialsystems:blocks/advancedfurnace_side",
+    "down": "spatialsystems:blocks/advancedfurnace_side",
+    "up": "spatialsystems:blocks/advancedfurnace_side",
+    "north": "spatialsystems:blocks/advancedfurnace_side",
+    "east": "spatialsystems:blocks/advancedfurnace_side",
+    "south": "spatialsystems:blocks/advancedfurnaceface_standard",
+    "west": "spatialsystems:blocks/advancedfurnace_side"
   }
 }

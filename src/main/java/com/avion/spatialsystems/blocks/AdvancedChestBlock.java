@@ -17,6 +17,8 @@ public class AdvancedChestBlock extends Block implements ITileEntityProvider {
         this.setUnlocalizedName("advancedChestBlock");
         this.setRegistryName("advancedchestblock");
         this.setCreativeTab(SpatialSystems.TAB);
+        this.setHarvestLevel("axe", 1);
+        this.setHardness(1F);
     }
 
     @Nullable

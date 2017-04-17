@@ -1,5 +1,11 @@
 {
   "variants": {
+    "facing=down":  { "model": "spatialsystems:advancedfurnacecontroller", "x": 270, "uvlock":false },
+    "facing=up":    { "model": "spatialsystems:advancedfurnacecontroller", "x": 90, "uvlock":false  },
+    "facing=north": { "model": "spatialsystems:advancedfurnacecontroller", "y": 180, "uvlock":false  },
+    "facing=south": { "model": "spatialsystems:advancedfurnacecontroller" },
+    "facing=west":  { "model": "spatialsystems:advancedfurnacecontroller", "y": 90, "uvlock":false  },
+    "facing=east":  { "model": "spatialsystems:advancedfurnacecontroller", "y": 270, "uvlock":false  },
     "normal": { "model":"spatialsystems:advancedfurnacecontroller" }
   }
 }
