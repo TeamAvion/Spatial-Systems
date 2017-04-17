@@ -2,8 +2,7 @@ package com.avion.spatialsystems.tile;
 
 import com.avion.spatialsystems.blocks.ModBlocks;
 import com.avion.spatialsystems.blocks.Properties;
-import com.avion.spatialsystems.util.BlockPosHelper;
-import com.avion.spatialsystems.util.FacingHelper;
+import com.avion.spatialsystems.util.WorldHelper;
 import com.avion.spatialsystems.util.LogHelper;
 import com.avion.spatialsystems.util.MiscHelper;
 import net.minecraft.inventory.ItemStackHelper;
@@ -24,13 +23,13 @@ public class TileAdvancedChest extends TileEntity {
 
     private NonNullList<ItemStack> inventory = NonNullList.withSize(27 * 9, ItemStack.EMPTY);
 
-    private BlockPos bottomNorthWestCorner = BlockPosHelper.NULL;
+    private BlockPos bottomNorthWestCorner = WorldHelper.NULL;
     private int dimension = 0;
 
     public void findMultiBlockStructure() {
         EnumFacing blockFacing = this.getWorld().getBlockState(this.getPos()).getValue(Properties.FACING);
-        for (EnumFacing f : MiscHelper.exceptArray(FacingHelper.VALUES, blockFacing)) {
-            LogHelper.info(f.getName()+" -> "+this.getWorld().getBlockState(this.getPos().offset(f)).getBlock().getLocalizedName().equals(ModBlocks.advancedChestBlock));
+        for (EnumFacing f : MiscHelper.exceptArray(EnumFacing.values(), blockFacing)) {
+            LogHelper.info(f.getName()+" -> "+this.getWorld().getBlockState(this.getPos().offset(f)).getBlock().equals(ModBlocks.advancedChestBlock));
             if (!this.getWorld().getBlockState(this.getPos().offset(f)).getBlock().equals(ModBlocks.advancedChestBlock)) {
                 structureNotFound();
                 return;
@@ -38,7 +37,7 @@ public class TileAdvancedChest extends TileEntity {
         }
 
         EnumFacing back = blockFacing.getOpposite();
-        BlockPos currPos = BlockPosHelper.copy(this.getPos());
+        BlockPos currPos = WorldHelper.copy(this.getPos());
         int dim = 0;
         for (int i = 0; i < 16; i++) {
             currPos = currPos.offset(back);
@@ -53,14 +52,13 @@ public class TileAdvancedChest extends TileEntity {
             return;
         }
 
-        Axis[] axesToCheck = MiscHelper.exceptArray(FacingHelper.AXES, back.getAxis()).toArray(new Axis[0]);
+        Axis[] axesToCheck = MiscHelper.exceptArray(EnumFacing.Axis.values(), back.getAxis()).toArray(new Axis[0]);
         for (Axis axis : axesToCheck) {
-            EnumFacing[] directionsToCheck = FacingHelper.getDirectionsFromAxis(axis);
+            EnumFacing[] directionsToCheck = WorldHelper.getDirectionsFromAxis(axis);
             for (EnumFacing f : directionsToCheck) {
 
             }
         }
-
     }
 
     private void structureNotFound() {

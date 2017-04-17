@@ -2,6 +2,9 @@ package com.avion.spatialsystems.blocks;
 
 import com.avion.spatialsystems.SpatialSystems;
 import com.avion.spatialsystems.tile.TileAdvancedChest;
+import com.avion.spatialsystems.util.LogHelper;
+import com.avion.spatialsystems.util.MBStruct;
+import com.google.common.base.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -16,10 +19,12 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nullable;
 
 import static com.avion.spatialsystems.blocks.Properties.FACING;
+import static com.avion.spatialsystems.util.MBStruct.WLD;
 
 //Created by Bread10 at 10:18 on 15/04/2017
 public class AdvancedChestController extends Block implements ITileEntityProvider {
@@ -66,7 +71,16 @@ public class AdvancedChestController extends Block implements ITileEntityProvide
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         if (!worldIn.isRemote) {
             TileAdvancedChest te = (TileAdvancedChest) worldIn.getTileEntity(pos);
+            if(te==null) throw new AssertionError("This is wrong!");
             te.findMultiBlockStructure();
+            MBStruct mb = new MBStruct().addLayer(0, new MBStruct.Plane(1, 1)
+                    .addRow('b', 'b', 'b')
+                    .addRow('b', WLD, 'b')
+                    .addRow('b', 'b', 'b')
+            ).registerMapping('b', ModBlocks.advancedChestBlock);
+            Optional<EnumFacing[]> o = mb.findStructure(worldIn, pos);
+            if(o.isPresent()) LogHelper.array(Level.DEBUG, o.orNull());
+            else System.out.println("Break me");
         }
     }
 
