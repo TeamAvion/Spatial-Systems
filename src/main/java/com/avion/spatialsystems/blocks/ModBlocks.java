@@ -6,7 +6,6 @@ import com.avion.spatialsystems.automation.NoMeta;
 import com.avion.spatialsystems.automation.NoTile;
 import com.avion.spatialsystems.items.ItemBlockMeta;
 import com.avion.spatialsystems.tile.TileAdvancedChest;
-import com.avion.spatialsystems.tile.TileAdvancedChestBlock;
 import com.avion.spatialsystems.tile.TileAdvancedFurnace;
 import com.avion.spatialsystems.util.EnumLevel;
 import com.avion.spatialsystems.util.MBStruct;
@@ -28,7 +27,7 @@ public class ModBlocks {
     public static @Automate(itemBlock = ItemBlockMeta.class, meta = EnumLevel.class)            AdvancedFurnaceBlock advancedFurnaceBlock;
     public static @Automate(tile = TileAdvancedFurnace.class, name = "Advanced Furnace")        AdvancedFurnaceController advancedFurnaceController;
     public static @Automate(tile = TileAdvancedChest.class, name = "Advanced Chest")            AdvancedChestController advancedChestController;
-    public static @Automate(tile = TileAdvancedChestBlock.class, name = "Advanced Chest Block") AdvancedChestBlock advancedChestBlock;
+    public static @Automate(name = "Advanced Chest Block") AdvancedChestBlock advancedChestBlock;
     public static final char PMC = 'b';
     public static final MBStruct chestMultiBlock = new MBStruct()
             .addLayer(0, new MBStruct.Plane(1, 1) // Define first layer (where controller is placed)
