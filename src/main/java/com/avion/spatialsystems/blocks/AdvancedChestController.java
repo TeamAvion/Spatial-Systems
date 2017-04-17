@@ -19,6 +19,8 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
+import static com.avion.spatialsystems.SpatialSystems.GUI_CHEST;
+import static com.avion.spatialsystems.SpatialSystems.instance;
 import static com.avion.spatialsystems.blocks.Properties.FACING;
 
 //Created by Bread10 at 10:18 on 15/04/2017
@@ -68,14 +70,14 @@ public class AdvancedChestController extends Block implements ITileEntityProvide
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         if (!worldIn.isRemote) {
             TileAdvancedChest te = (TileAdvancedChest) worldIn.getTileEntity(pos);
-            te.findMultiBlockStructure();
         }
     }
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (!playerIn.isSneaking()) {
-
+            playerIn.openGui(instance, GUI_CHEST, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            return true;
         }
         return false;
     }
