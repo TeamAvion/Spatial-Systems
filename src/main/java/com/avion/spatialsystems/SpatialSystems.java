@@ -1,9 +1,9 @@
 package com.avion.spatialsystems;
 
-import com.avion.spatialsystems.gui.GUIHandler;
 import com.avion.spatialsystems.blocks.ModBlocks;
-import com.avion.spatialsystems.util.LogHelper;
+import com.avion.spatialsystems.gui.GUIHandler;
 import com.avion.spatialsystems.proxy.CommonProxy;
+import com.avion.spatialsystems.util.LogHelper;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Mod;
@@ -13,10 +13,6 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import sun.reflect.ConstructorAccessor;
-
-import java.lang.reflect.*;
-import java.util.Arrays;
 
 @Mod(modid = SpatialSystems.MODID, version = SpatialSystems.VERSION)
 public class SpatialSystems {
@@ -52,7 +48,15 @@ public class SpatialSystems {
         proxy.init(); // Renders are created here
     }
 
-
+    public static int clamp(int n, int min, int max) {
+        if (n < min) {
+            return min;
+        }
+        if (n > max) {
+            return max;
+        }
+        return n;
+    }
 
 
 
