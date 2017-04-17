@@ -45,8 +45,9 @@ public class ModBlocks {
                             new char[]{PMC, PMC, PMC},
                             new char[]{PMC, PMC, PMC}
                     )
-            ).addLayer(2, 1).registerMapping(PMC, advancedChestBlock); // Copy layer 1 to layer 2
-    public static final MBStruct furnaceMultiBlock = chestMultiBlock.copy().registerMapping(PMC, advancedFurnaceBlock); // Exactly the same as above except different mapping for primary mapping character
+            ).addLayer(2, 1).registerLazyMapping(PMC, new MBStruct.StaticFieldReference<Block>("advancedChestBlock", ModBlocks.class)).setStrict(true); // Copy layer 1 to layer 2
+    // Exactly the same as above except different mapping for primary mapping character
+    public static final MBStruct furnaceMultiBlock = chestMultiBlock.copy().registerLazyMapping(PMC, new MBStruct.StaticFieldReference<Block>("advancedFurnaceBlock", ModBlocks.class));
 
     public static void register() {
         // Automation

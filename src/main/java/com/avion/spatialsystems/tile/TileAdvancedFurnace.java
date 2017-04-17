@@ -43,10 +43,9 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
     public void update() {
 
         ItemStack i;
-
-        if(!isSmelting && (isSmelting=smeltPossible())){
-            cookTime = 0;
-        }else if(smeltPossible() && cookTime >= maxCookTime){
+        if(isSmelting) cookTime += 2;
+        if(!isSmelting && (isSmelting=smeltPossible())) cookTime = 0;
+        else if(smeltPossible() && cookTime >= maxCookTime){
             smeltItem();
             cookTime = 0;
             isSmelting = false;
