@@ -23,6 +23,7 @@ import static com.avion.spatialsystems.SpatialSystems.GUI_FURNACE;
 import static com.avion.spatialsystems.SpatialSystems.instance;
 import static com.avion.spatialsystems.blocks.Properties.FACING;
 
+@SuppressWarnings("ALL")
 public class AdvancedFurnaceController extends Block {
 
     public AdvancedFurnaceController(){
@@ -78,12 +79,12 @@ public class AdvancedFurnaceController extends Block {
 
     @Override
     public boolean hasTileEntity(IBlockState state) {
-        return true; //TODO: Check if multi-block is formed
+        return true;
     }
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        playerIn.openGui(instance, GUI_FURNACE, worldIn, pos.getX(), pos.getY(), pos.getZ());
+        if(ModBlocks.furnaceMultiBlock.findStructure(worldIn, pos).length!=0) playerIn.openGui(instance, GUI_FURNACE, worldIn, pos.getX(), pos.getY(), pos.getZ());
 
         return true; //TODO: Check if multi-block is formed
     }

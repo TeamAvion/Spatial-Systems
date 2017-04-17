@@ -1,5 +1,6 @@
 package com.avion.spatialsystems.util;
 
+import com.google.common.base.Optional;
 import javafx.util.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.util.EnumFacing;
@@ -21,7 +22,7 @@ public class MBStruct{
     public static final char WLD = '*';
 
     protected final Map<Integer, Plane> structure = new HashMap<Integer, Plane>();
-    protected final Map<Character, Block> mappings = new HashMap<Character, Block>();
+    protected final Map<Character, Pair<Block, Optional<Integer>>> mappings = new HashMap<Character, Pair<Block, Optional<Integer>>>();
 
     /**
      * Add a new search layer. Higher numbers are ordered behind lower numbers (relative to centre).
@@ -30,6 +31,20 @@ public class MBStruct{
      * @return Reference to this object for chaining.
      */
     public MBStruct addLayer(int relativeOffset, Plane layer){ structure.put(relativeOffset, layer); return this; }
+
+    /**
+     * Remove search layer at the given offset.
+     * @param relativeOffset  Offset behind centre position. Higher number => further back.
+     * @return Reference to this object for chaining.
+     */
+    public MBStruct removeLayer(int relativeOffset){ structure.remove(relativeOffset); return this; }
+
+    /**
+     * Get the search layer at the given offset.
+     * @param relativeOffset  Offset behind centre position. Higher number => further back.
+     * @return Plane defining search for this layer.
+     */
+    public Plane getLayer(int relativeOffset){ return structure.get(relativeOffset); }
 
     /**
      * Add a copy of a given search layer at the supplied relative offset. Higher numbers are ordered behind lower numbers (relative to centre).
@@ -49,9 +64,36 @@ public class MBStruct{
      */
     public MBStruct registerMapping(char blockMapping, Block mappedBlock){
         if(blockMapping==WLD) throw new RuntimeException("Can't assign wildcard mapping '"+WLD+"' to "+mappedBlock);
-        mappings.put(blockMapping, mappedBlock);
+        mappings.put(blockMapping, new Pair<Block, Optional<Integer>>(mappedBlock, Optional.<Integer>absent()));
         return this;
     }
+
+    /**
+     * Delete all character-block mappings.
+     * @return Reference to this object for chaining.
+     */
+    public MBStruct clearMappings(){ mappings.clear(); return this; }
+
+    /**
+     * Registers a character-block mapping with a specific metadata. This is used to correlate a supplied character in the search planes with a block in game.<br>
+     * <em>NOTE:</em> Character defined in {@link MBStruct#WLD} cannot be mapped to a block.
+     * @param blockMapping Character to correlate with a block
+     * @param mappedBlock Block to search when the specified character is found in a plane.
+     * @param meta Specific metadata to allow when searching.
+     * @return Reference to this object for chaining.
+     */
+    public MBStruct registerMapping(char blockMapping, Block mappedBlock, int meta){
+        if(blockMapping==WLD) throw new RuntimeException("Can't assign wildcard mapping '"+WLD+"' to "+mappedBlock);
+        mappings.put(blockMapping, new Pair<Block, Optional<Integer>>(mappedBlock, Optional.of(meta)));
+        return this;
+    }
+
+    /**
+     * Gets a character-block mapping from a given character if it exists.
+     * @param of Character corresponding to mapping.
+     * @return Mapped block and metadata if metadata was specified. If no mapping is linked to the given character, return is null.
+     */
+    public Pair<Block, Optional<Integer>> getMapping(char of){ return mappings.containsKey(of)?mappings.get(of):null; }
 
     /**
      * Search for the given block structure/collection in any/all of the horizontal directions.
