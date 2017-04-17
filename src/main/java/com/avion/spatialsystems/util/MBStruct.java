@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("ALL")
-public class MBStruct{
+@SuppressWarnings("all")
+public class MBStruct {
     @SuppressWarnings("unchecked")
     private static final List<EnumFacing> h = Arrays.asList(EnumFacing.HORIZONTALS);
 
@@ -161,9 +161,9 @@ public class MBStruct{
     public MBStruct copy(){
         MBStruct m = new MBStruct();
         Pair<ObjectReference<Block>, Optional<Integer>> p;
-        for(Integer i : structure.keySet()) m.structure.put(i.intValue(), structure.get(i).copy());
+        for(Integer i : structure.keySet()) m.structure.put(i, structure.get(i).copy());
         for(Character c : mappings.keySet())
-            m.mappings.put(c.charValue(), new Pair<ObjectReference<Block>, Optional<Integer>>(
+            m.mappings.put(c, new Pair<ObjectReference<Block>, Optional<Integer>>(
                     new ImmutableReference<Block>((p=mappings.get(c)).getKey().get()),
                     Optional.fromNullable(p.getValue().isPresent()?p.getValue().get():null))
             );
