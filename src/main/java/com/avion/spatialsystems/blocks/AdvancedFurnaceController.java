@@ -3,6 +3,7 @@ package com.avion.spatialsystems.blocks;
 import com.avion.spatialsystems.SpatialSystems;
 import com.avion.spatialsystems.tile.TileAdvancedFurnace;
 import net.minecraft.block.Block;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -18,7 +19,7 @@ import javax.annotation.Nullable;
 import static com.avion.spatialsystems.SpatialSystems.GUI_FURNACE;
 import static com.avion.spatialsystems.SpatialSystems.instance;
 
-public class AdvancedFurnaceController extends Block {
+public class AdvancedFurnaceController extends Block implements ITileEntityProvider {
 
     public AdvancedFurnaceController(){
         super(Material.ROCK);
@@ -36,7 +37,9 @@ public class AdvancedFurnaceController extends Block {
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(World world, IBlockState state) { return new TileAdvancedFurnace(); }
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        return new TileAdvancedFurnace();
+    }
 
     @Override
     public boolean hasTileEntity(IBlockState state) {
@@ -49,4 +52,5 @@ public class AdvancedFurnaceController extends Block {
 
         return true; //TODO: Check if multi-block is formed
     }
+
 }

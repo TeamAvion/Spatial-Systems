@@ -72,7 +72,6 @@ public class AdvancedChestController extends Block implements ITileEntityProvide
         if (!worldIn.isRemote) {
             TileAdvancedChest te = (TileAdvancedChest) worldIn.getTileEntity(pos);
             if(te==null) throw new AssertionError("This is wrong!");
-            te.findMultiBlockStructure();
             MBStruct mb = new MBStruct().addLayer(0, new MBStruct.Plane(1, 1)
                     .addRow('b', 'b', 'b')
                     .addRow('b', WLD, 'b')
@@ -80,7 +79,7 @@ public class AdvancedChestController extends Block implements ITileEntityProvide
             ).registerMapping('b', ModBlocks.advancedChestBlock);
             Optional<EnumFacing[]> o = mb.findStructure(worldIn, pos);
             if(o.isPresent()) LogHelper.array(Level.DEBUG, o.orNull());
-            else System.out.println("Break me");
+            else LogHelper.warning("Break me");
         }
     }
 
@@ -88,6 +87,7 @@ public class AdvancedChestController extends Block implements ITileEntityProvide
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (!playerIn.isSneaking()) {
 
+            return true;
         }
         return false;
     }
