@@ -8,8 +8,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import scala.actors.threadpool.Arrays;
-
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +57,27 @@ public class MBStruct {
      * @return Reference to this object for chaining.
      */
     public MBStruct addLayer(int relativeOffset, int source){ if(structure.containsKey(source)) structure.put(relativeOffset, structure.get(source)); return this; }
+
+    /**
+     * Add a given amount of identical layers. Starting at layer <em><b>startOff</b></em> and ending at layer <em><b>startOff</b></em> + <em><b>count</b></em> - 1.
+     * @param startOff Starting layer offset.
+     * @param count Amount of layers to add
+     * @param of Plane to use.
+     * @return Reference to this object for chaining.
+     */
+    public MBStruct addLayers(int startOff, int count, Plane of){
+        for(int i = 0; i<count; ++i) addLayer(i+startOff, of.copy());
+        return this;
+    }
+
+    /**
+     * Add a given amount of identical layers. Starting at layer <em><b>startOff</b></em> and ending at layer <em><b>startOff</b></em> + <em><b>count</b></em> - 1.
+     * @param startOff Starting layer offset.
+     * @param count Amount of layers to add
+     * @param source Layer to copy plane from.
+     * @return Reference to this object for chaining.
+     */
+    public MBStruct addLayers(int startOff, int count, int source){ addLayers(startOff, count, structure.get(source)); return this; }
 
     /**
      * Registers a character-block mapping. This is used to correlate a supplied character in the search planes with a block in game.<br>
@@ -249,6 +268,34 @@ public class MBStruct {
         public Plane addPlane(char[]... plane){ for(char[] c : plane) addRow(c); return this; }
 
         /**
+         * Add a plane filled solely with the given map-character with the specified dimensions.
+         * @param map Character to create the plane with.
+         * @param width Width of filled plane.
+         * @param height Height of filled plane.
+         * @return Reference to this object for chaining.
+         */
+        public Plane addPlane(char map, int width, int height){
+            char[][] c = new char[height][width];
+            for(int i = 0; i<height; ++i)
+                for(int j = 0; j<width; ++j)
+                    c[i][j] = map;
+            addPlane(c);
+            return this;
+        }
+
+        /**
+         * Replace a mapped character at a given x and y coordinate (x defines offset from left, y defines offset from top).
+         * @param map Net character to replace with.
+         * @param x Offset from left of map (ignores all previously defined offsets).
+         * @param y Offset from top of map (ignores all previously defined offsets).
+         * @return Reference to this object for chaining.
+         */
+        public Plane replace(char map, int x, int y){
+            rows.get(y)[x] = map;
+            return this;
+        }
+
+        /**
          * Create an array mapping this plane to an in-world block position based on the supplied centre, the vertical offset and the horizontal offset.
          * After the map is created, it is rotated to align with the given direction.
          * @param centre Specified centre of the plane (as dictated by verital and horizontal offset).
@@ -282,32 +329,6 @@ public class MBStruct {
             Plane p = new Plane(vOff, hOff);
             for(char[] c : rows) p.rows.add(Arrays.copyOf(c, c.length));
             return p;
-        }
-    }
-
-    public static interface ObjectReference<T> { public T get(); }
-    public static class ImmutableReference<T> implements ObjectReference<T>{
-        private final T t;
-        public ImmutableReference(T t){ this.t = t; }
-        @Override public T get() { return t; }
-    }
-    public static class StaticFieldReference<T> implements ObjectReference<T> {
-        protected final String fieldName;
-        protected final String clazzName;
-        protected Class resolved;
-        protected Field resolvedField;
-
-        public StaticFieldReference(String fieldName, String clazzName){ this.fieldName = fieldName; this.clazzName = clazzName; }
-        public StaticFieldReference(Field field, String clazzName){ this.resolvedField = field; this.fieldName = null; this.clazzName = clazzName; }
-        public StaticFieldReference(Field field, Class clazz){ this.resolvedField = field; this.resolved = clazz; this.fieldName = null; this.clazzName = null; }
-        public StaticFieldReference(String fieldName, Class clazz){ this.fieldName = fieldName; this.clazzName = null; this.resolved = clazz; }
-
-        @Override
-        public T get() {
-            if(resolved == null) try{ resolved = Class.forName(clazzName); }catch(Throwable e){ e.printStackTrace(); }
-            if(resolvedField == null) try{ resolvedField = resolved.getDeclaredField(fieldName); resolvedField.setAccessible(true); }catch(Throwable e){ e.printStackTrace(); }
-            try{ return (T) resolvedField.get(null); }catch(Throwable e){ e.printStackTrace(); }
-            return null;
         }
     }
 }

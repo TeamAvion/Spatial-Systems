@@ -3,6 +3,7 @@ package com.avion.spatialsystems.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+@SuppressWarnings("unused")
 public final class RefHelper {
     public static Object getValue(String name, Object on, Class<?> from){
         try{
@@ -37,4 +38,23 @@ public final class RefHelper {
             return f.get(nestedClass);
         }catch(Exception e){ if(error) e.printStackTrace(); return null; }
     }
+
+    @SuppressWarnings("ThrowableNotThrown")
+    public static Class getCallerClass(boolean ignoreSpecial, int depth){
+        StackTraceElement[] trace = new Exception().getStackTrace();
+        boolean foundFirst = false, isReflective;
+        for(int i = 0; i<trace.length; ++i) {
+            if (i < depth || ((isReflective=(trace[i].isNativeMethod() || trace[i].getClassName().startsWith("java.lang.reflect") ||
+                    trace[i].getClassName().startsWith("sun.reflect"))) && !foundFirst) || (isReflective && ignoreSpecial)) continue;
+            if(!foundFirst){
+                foundFirst = true;
+                continue;
+            }
+            try{ return Class.forName(trace[i].getClassName()); }catch(Throwable e){ e.printStackTrace(); return null; }
+        }
+        return null;
+    }
+
+    public static Class getCallerClass(boolean ignoreSpecial){ return getCallerClass(ignoreSpecial, 2); }
+    public static Class getCallerClass(){ return getCallerClass(true, 2); }
 }

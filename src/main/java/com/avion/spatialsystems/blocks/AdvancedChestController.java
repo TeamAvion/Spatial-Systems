@@ -24,6 +24,7 @@ import static com.avion.spatialsystems.SpatialSystems.instance;
 import static com.avion.spatialsystems.blocks.Properties.FACING;
 
 //Created by Bread10 at 10:18 on 15/04/2017
+@SuppressWarnings("ALL")
 public class AdvancedChestController extends Block implements ITileEntityProvider {
 
     public AdvancedChestController(){

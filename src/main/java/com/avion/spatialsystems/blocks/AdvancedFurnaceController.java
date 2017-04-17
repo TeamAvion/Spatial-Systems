@@ -84,7 +84,9 @@ public class AdvancedFurnaceController extends Block {
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if(ModBlocks.furnaceMultiBlock.findStructure(worldIn, pos).length!=0) playerIn.openGui(instance, GUI_FURNACE, worldIn, pos.getX(), pos.getY(), pos.getZ());
+        if((ModBlocks.furnaceMultiBlockGrand.findStructure(worldIn, pos).length!=0 || ModBlocks.furnaceMultiBlockBig.findStructure(worldIn, pos).length!=0 ||
+                ModBlocks.furnaceMultiBlock.findStructure(worldIn, pos).length!=0) && !playerIn.isSneaking())
+            playerIn.openGui(instance, GUI_FURNACE, worldIn, pos.getX(), pos.getY(), pos.getZ());
 
         return true; //TODO: Check if multi-block is formed
     }
