@@ -76,6 +76,7 @@ public class AdvancedChestController extends Block implements ITileEntityProvide
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (!playerIn.isSneaking()) {
+            ((TileAdvancedChest) worldIn.getTileEntity(pos)).sync();
             playerIn.openGui(instance, GUI_CHEST, worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
