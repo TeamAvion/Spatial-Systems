@@ -11,14 +11,12 @@ import net.minecraft.item.ItemStack;
 //Created by Bread10 at 09:52 on 16/04/2017
 public class ContainerAdvancedChest extends Container {
 
-    private InventoryPlayer playerInv;
-    private TileAdvancedChest tile;
-    private int pages;
+    private final InventoryPlayer playerInv;
+    private final TileAdvancedChest tile;
 
     public ContainerAdvancedChest(InventoryPlayer player, TileAdvancedChest te) {
         this.playerInv = player;
         this.tile = te;
-        pages = (int) Math.floor(tile.getSizeInventory() / 54) + 1;
         setupSlots();
     }
 
@@ -46,37 +44,28 @@ public class ContainerAdvancedChest extends Container {
 
     @Override
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
-        ItemStack previous = ItemStack.EMPTY;
+        ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack()) {
-            ItemStack current = slot.getStack();
-            previous = current.copy();
-
-            //<custom behaviour>
+            ItemStack itemstack1 = slot.getStack();
+            itemstack = itemstack1.copy();
 
             if (index < getTileSlotsOnPage()) {
-                if (!this.mergeItemStack(current, getTileSlotsOnPage(), getTileSlotsOnPage() + 36, true))
+                if (!this.mergeItemStack(itemstack1, getTileSlotsOnPage(), getTileSlotsOnPage() + 36, true))
                     return ItemStack.EMPTY;
             } else {
-                if (!this.mergeItemStack(current, 0, getTileSlotsOnPage(), false))
+                if (!this.mergeItemStack(itemstack1, 0, getTileSlotsOnPage()-1, false))
                     return ItemStack.EMPTY;
             }
 
-            //</custom behaviour>
-
-            if (current.isEmpty()) {
+            if (itemstack1.isEmpty()) {
                 slot.putStack(ItemStack.EMPTY);
             } else {
                 slot.onSlotChanged();
             }
-
-            if (current.getCount() == previous.getCount()) {
-                return ItemStack.EMPTY;
-            }
-            slot.onTake(playerIn, current);
         }
-        return previous;
+        return itemstack;
     }
 
     @Override

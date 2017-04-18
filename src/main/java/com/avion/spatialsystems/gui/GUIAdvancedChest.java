@@ -23,9 +23,6 @@ public class GUIAdvancedChest extends GuiContainer {
     private TileAdvancedChest tile;
     private final int pages;
 
-    private GuiButton backButton;
-    private GuiButton nextButton;
-
     public GUIAdvancedChest(InventoryPlayer playerInv, TileAdvancedChest tile) {
         super(new ContainerAdvancedChest(playerInv, tile));
 
@@ -43,13 +40,13 @@ public class GUIAdvancedChest extends GuiContainer {
         super.initGui();
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
-        this.buttonList.add(this.backButton = new GuiButton(0, i+ 102, j+ 126, 14, 12, "<"));
-        this.buttonList.add(this.backButton = new GuiButton(1, i+ 142, j+ 126, 14, 12, ">"));
+        this.buttonList.add(new GuiButton(0, i+ 102, j+ 126, 14, 12, "<"));
+        this.buttonList.add(new GuiButton(1, i+ 142, j+ 126, 14, 12, ">"));
     }
 
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
-        int newPage = 1;
+        int newPage = tile.getCurrentPage();
         switch (button.id) {
             case 0: //Back button
                 newPage--;

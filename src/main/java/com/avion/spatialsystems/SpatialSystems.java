@@ -40,11 +40,11 @@ public class SpatialSystems {
     public void preInit(FMLPreInitializationEvent event) {
         LogHelper.setLogger(event.getModLog());
         proxy.preInit();
-        NetworkRegistry.INSTANCE.registerGuiHandler(this, new GUIHandler()); // Memes are created here
     }
     
     @EventHandler
     public void init(FMLInitializationEvent event) {
+        NetworkRegistry.INSTANCE.registerGuiHandler(this, new GUIHandler()); // Memes are created here
         proxy.init(); // Renders are created here
     }
 
