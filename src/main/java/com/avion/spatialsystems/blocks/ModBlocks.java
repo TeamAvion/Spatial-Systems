@@ -9,17 +9,11 @@ import com.avion.spatialsystems.tile.TileAdvancedChest;
 import com.avion.spatialsystems.tile.TileAdvancedFurnace;
 import com.avion.spatialsystems.util.*;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import static com.avion.spatialsystems.util.MBStruct.WLD;
@@ -51,7 +45,8 @@ public class ModBlocks {
             .registerLazyMapping(PMC, FieldReference.<Block>staticFromHere("advancedChestBlock"))
             .setStrict(true);
     public static final MBStruct furnaceMultiBlockGrand = chestMultiBlockGrand.copy().registerLazyMapping(PMC, FieldReference.<Block>staticFromHere("advancedFurnaceBlock"));
-    public static final DynamicMBStruct dynamicFurnace = new DynamicMBStruct().add(PMC, FieldReference.<Block>staticFromHere("advancedFurnaceBlock")).setStrict(true);
+    // 1,352 is the outer block count of a 16*16*16 cube (16*16*16 - 14*14*14)
+    public static final DynamicMBStruct dynamicFurnace = new DynamicMBStruct().add(PMC, FieldReference.<Block>staticFromHere("advancedFurnaceBlock")).setStrict(true).setMaxSize(1352);
 
 
     public static void register() {

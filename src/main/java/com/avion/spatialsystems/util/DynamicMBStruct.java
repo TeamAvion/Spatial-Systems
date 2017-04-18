@@ -22,41 +22,23 @@ public class DynamicMBStruct {
     protected SearchMode defaultSearchMode = CARDINAL;
     protected boolean strict = false;
     public final HashMap<ObjectReference<? extends Block>, WorldPredicate> customBlockHandler = new HashMap<ObjectReference<? extends Block>, WorldPredicate>();
+    protected int maxSize = -1;
 
     public boolean isAllowed(Block b, int meta){
         for(Pair<ObjectReference<? extends Block>, Optional<Integer>> p : search.values()) if(b.equals(p.getKey().get()) && (!p.getValue().isPresent() || p.getValue().get()==meta)) return true;
         return false;
     }
-
-    public boolean isAllowed(Block b){
-        for(Pair<ObjectReference<? extends Block>, Optional<Integer>> p : search.values()) if(b.equals(p.getKey().get())) return true;
-        return false;
-    }
-
+    public boolean isAllowed(Block b){ for(Pair<ObjectReference<? extends Block>, Optional<Integer>> p : search.values()) if(b.equals(p.getKey().get())) return true; return false; }
     public boolean isAllowed(ObjectReference<Block> b, int meta){
         for(Pair<ObjectReference<? extends Block>, Optional<Integer>> p : search.values()) if(p.getKey().equals(b) && (!p.getValue().isPresent() || p.getValue().get()==meta)) return true;
         return false;
     }
-
-    public boolean isAllowed(ObjectReference<Block> b){
-        for(Pair<ObjectReference<? extends Block>, Optional<Integer>> p : search.values()) if(p.getKey().equals(b)) return true;
-        return false;
-    }
-
+    public boolean isAllowed(ObjectReference<Block> b){ for(Pair<ObjectReference<? extends Block>, Optional<Integer>> p : search.values()) if(p.getKey().equals(b)) return true; return false; }
     public boolean isAllowed(IBlockState b){ return isAllowed(b.getBlock(), b.getBlock().getMetaFromState(b)); }
-
-    public boolean hasSpecificMeta(Block b){
-        for(Pair<ObjectReference<? extends Block>, Optional<Integer>> p : search.values()) if(p.getKey().equals(b) && p.getValue().isPresent()) return true;
-        return false;
-    }
-
+    public DynamicMBStruct setMaxSize(int maxSize){ this.maxSize = maxSize; return this; }
+    public boolean hasSpecificMeta(Block b){ for(Pair<ObjectReference<? extends Block>, Optional<Integer>> p : search.values()) if(p.getKey().equals(b) && p.getValue().isPresent()) return true; return false; }
     public <T extends Block> DynamicMBStruct registerCustomBlockHandler(T b, WorldPredicate p){ return registerCustomBlockHandler(new ImmutableReference<T>(b), p); }
-
-    public <T extends Block> DynamicMBStruct registerCustomBlockHandler(ObjectReference<T> b, WorldPredicate p){
-        customBlockHandler.put(b, p);
-        return this;
-    }
-
+    public <T extends Block> DynamicMBStruct registerCustomBlockHandler(ObjectReference<T> b, WorldPredicate p){ customBlockHandler.put(b, p); return this; }
     protected boolean isAllowedStrict(IBlockState b, ArrayList<Pair<Block, Integer>> a){
         Block b1 = b.getBlock();
         int i = b1.getMetaFromState(b);
@@ -75,7 +57,6 @@ public class DynamicMBStruct {
     }
 
     public DynamicMBStruct setStrict(boolean strict){ this.strict = strict; return this; }
-
     public DynamicMBStruct add(int id, Block b, int meta){
         if(!isAllowed(b, meta)) search.put(id, new Pair<ObjectReference<? extends Block>, Optional<Integer>>(new ImmutableReference<Block>(b), Optional.of(meta)));
         return this;
@@ -161,6 +142,7 @@ public class DynamicMBStruct {
         for(BlockPos b : temp)
             if(((p=getCustomBlockHandler((b1=w.getBlockState(b)).getBlock()))==null || (p instanceof MBPredicate?((MBPredicate)p).apply(w, b, exclude, mStrict, this):p.apply(w, b))) &&
                     defaultApply(exclude, mStrict, b, w, b1)) { // Handling system
+                if(exclude.size()+1>maxSize && maxSize>1) return;
                 exclude.add(b);
                 nPos.add(b);
                 if(strict && !isRegistered(b1.getBlock(), mStrict) && hasSpecificMeta(b1.getBlock())) mStrict.add(new Pair<Block, Integer>(b1.getBlock(), b1.getBlock().getMetaFromState(b1)));
