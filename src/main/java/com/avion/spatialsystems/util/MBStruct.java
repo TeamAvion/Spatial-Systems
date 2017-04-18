@@ -190,22 +190,37 @@ public class MBStruct {
         return m;
     }
 
-    protected boolean findStructure(World w, BlockPos centre, EnumFacing dir){
-        if(!h.contains(dir)) return false;
+    protected boolean findStructure(World w, BlockPos centre, EnumFacing dir){ return getMap(w, centre, dir)!=null; }
+
+    /**
+     * Gets a flattened array of all positions corresponding to the supplied model with the properly calculated metadata values (only if supplied or in strict mode).
+     * @param w World to account for.
+     * @param centre Which position should be considered the "controller".
+     * @param direction Direction the structure should point towards. (Higher relative offset values will be further away in this direction).
+     * @return The flattened array.
+     */
+    public Pair<BlockPos, Optional<IBlockState>>[] getMap(World w, BlockPos centre, EnumFacing direction){
+        if(!h.contains(direction)) return null;
         Plane p;
         Pair<ObjectReference<Block>, Optional<Integer>> p1;
         IBlockState b;
         HashMap<Block, Integer> strictMap = null;
+        ArrayList<Pair<BlockPos, Optional<IBlockState>>> realMap = new ArrayList<Pair<BlockPos, Optional<IBlockState>>>();
         if(strict) strictMap = new HashMap<Block, Integer>();
         boolean b1 = false;
         boolean state = false;
         for(Integer i : structure.keySet())
-            for(Pair<BlockPos, Character>[] pos : (p=structure.get(i)).getPosMap(centre, i, dir))
-                for(Pair<BlockPos, Character> pos1 : pos)
-                    if((b1=!pos1.getKey().equals(centre)) /* Ignore controller block */ && !matches(w, pos1.getKey(), pos1.getValue(), strictMap))
-                        return false;
-                    else if(b1 && strict && !strictMap.containsKey((b=w.getBlockState(pos1.getKey())))) strictMap.put(b.getBlock(), b.getBlock().getMetaFromState(b)); // Temporary strict-mode metadata mapping
-        return true;
+            for(Pair<BlockPos, Character> pos : (p=structure.get(i)).getPosMap(centre, i, direction))
+                if((b1 = !pos.getKey().equals(centre)) /* Ignore controller block */ && !matches(w, pos.getKey(), pos.getValue(), strictMap)){
+                    return null;
+                }else if(b1 && strict) {
+                    if (!strictMap.containsKey((b = w.getBlockState(pos.getKey())))) strictMap.put(b.getBlock(), b.getBlock().getMetaFromState(b)); // Temporary strict-mode metadata mapping
+                    else return null;
+                    realMap.add(new Pair(pos.getKey(), b));
+                }else if(b1)
+                    realMap.add(new Pair<BlockPos, Optional<IBlockState>>(pos.getKey(),
+                            (p1=mappings.get(pos.getValue())).getValue().isPresent()?Optional.of(w.getBlockState(pos.getKey())):Optional.<IBlockState>absent()));
+        return realMap.toArray(new Pair[realMap.size()]);
     }
 
     /**
@@ -303,22 +318,62 @@ public class MBStruct {
          * @param direction Axis to align plane with.
          * @return Block-position-correlated character map relative to the centre.
          */
-        public Pair<BlockPos, Character>[][] getPosMap(BlockPos centre, int xOff, EnumFacing direction){
+        public Pair<BlockPos, Character>[] getPosMap(BlockPos centre, int xOff, EnumFacing direction){
             int largest = 0;
             for(char[] c : rows) if(c.length>largest) largest = c.length;
-            Pair<BlockPos, Character>[][] b = new Pair[rows.size()][largest];
+            int largest1 = largest*rows.size();
+            Pair<BlockPos, Character>[] b = new Pair[largest1];
             for(int i = 0; i<rows.size(); ++i) {
                 char[] c = rows.get(i);
-                for (int j = 0; j<largest; ++j) {
-                    BlockPos b1 = new BlockPos(centre.getX() + xOff, centre.getY() + i - vOff, centre.getZ() + j - hOff);
-                    if(direction!=EnumFacing.EAST)
-                        b1 = WorldHelper.rotatePos(
-                                direction==EnumFacing.WEST?WorldHelper.rotatePos(b1, centre, WorldHelper.Rotate.RIGHT):
-                                        b1, centre, direction==EnumFacing.SOUTH||direction==EnumFacing.WEST?WorldHelper.Rotate.RIGHT:WorldHelper.Rotate.LEFT);
-                    b[i][j] = new Pair<BlockPos, Character>(b1, j < c.length ? c[j] : MBStruct.WLD);
+                for (int j = 0; j<largest; ++j)
+                    b[i*largest+j] = new Pair<BlockPos, Character>(
+                            rotate(new BlockPos(centre.getX() + xOff, centre.getY() + i - vOff, centre.getZ() + j - hOff), centre, direction),
+                            j < c.length ? c[j] : MBStruct.WLD
+                    );
+            }
+            return b;
+        }
+
+        /**
+         * Generates a simple mapping defining all points that should be checked. This method ignores any character mappings.<br>
+         * @param centre Specified centre of the plane (as dictated by verital and horizontal offset).
+         * @param xOff Offset in the second vertical axis. For simplicity, this is referred to as Axis-X when referring the the rotationally ambiguous plane (pre-rotation).
+         * @param direction Axis to align plane with.
+         * @param includeImplicit Whether or not to include implicitly defined block positions (i.e. filler, wildcard points the ensure that the plane is rectangular).
+         * @return BlockPos array relative to the centre.
+         */
+        public BlockPos[] getSimpleMap(BlockPos centre, int xOff, EnumFacing direction, boolean includeImplicit){
+            int i1 = 0, i2 = -1;
+            BlockPos[] b;
+            if(includeImplicit) {
+                for (char[] c : rows) if (c.length > i1) i1 = c.length;
+                i2 = i1 * rows.size();
+                b = new BlockPos[i2];
+                for (int i = 0; i < i2; ++i)
+                    b[i] = rotate(new BlockPos(centre.getX() + xOff, centre.getY() + i - vOff, centre.getZ() + i % i1 - hOff), centre, direction);
+            }else{
+                for(char[] c : rows) i1+=c.length;
+                b = new BlockPos[i1];
+                for(int i = 0; i<rows.size(); ++i) {
+                    char[] c = rows.get(i);
+                    for (int j = 0; j<c.length; ++j) b[++i2] = rotate(new BlockPos(centre.getX() + xOff, centre.getY() + i - vOff, centre.getZ() + j - hOff), centre, direction);
                 }
             }
             return b;
+        }
+
+        /**
+         * Calculate a rotation around a certain position such that the new position is considered aligned with the supplied direction.
+         * @param pos Position to rotate.
+         * @param around Position to pivot rotation around.
+         * @param align How to align the rotation.
+         * @return A new BlockPos object defining a rotated version of the given position around the pivot.
+         */
+        public BlockPos rotate(BlockPos pos, BlockPos around, EnumFacing align){
+            if(align==EnumFacing.EAST) return new BlockPos(pos.getX(), pos.getY(), pos.getZ());
+            return WorldHelper.rotatePos(
+                            align==EnumFacing.WEST?WorldHelper.rotatePos(pos, around, WorldHelper.Rotate.RIGHT):
+                                    pos, around, align==EnumFacing.SOUTH||align==EnumFacing.WEST?WorldHelper.Rotate.RIGHT:WorldHelper.Rotate.LEFT);
         }
 
         /**

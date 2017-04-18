@@ -2,6 +2,7 @@ package com.avion.spatialsystems.blocks;
 
 import com.avion.spatialsystems.SpatialSystems;
 import com.avion.spatialsystems.tile.TileAdvancedFurnace;
+import com.avion.spatialsystems.util.DynamicMBStruct;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -9,6 +10,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -18,6 +20,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+
+import java.util.List;
 
 import static com.avion.spatialsystems.SpatialSystems.GUI_FURNACE;
 import static com.avion.spatialsystems.SpatialSystems.instance;
@@ -84,8 +88,11 @@ public class AdvancedFurnaceController extends Block {
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if((ModBlocks.furnaceMultiBlockGrand.findStructure(worldIn, pos).length!=0 || ModBlocks.furnaceMultiBlockBig.findStructure(worldIn, pos).length!=0 ||
-                ModBlocks.furnaceMultiBlock.findStructure(worldIn, pos).length!=0) && !playerIn.isSneaking())
+        List<BlockPos> l = ModBlocks.dynamicFurnace.find(worldIn, pos); // Load a dynamic size & shape
+        if(/*(ModBlocks.furnaceMultiBlockGrand.findStructure(worldIn, pos).length!=0 ||
+                ModBlocks.furnaceMultiBlockBig.findStructure(worldIn, pos).length!=0 ||
+                ModBlocks.furnaceMultiBlock.findStructure(worldIn, pos).length!=0)*/ // Static shapes
+                (l.size()==27 || l.size()==125 || l.size()==343) && !playerIn.isSneaking()) // Dynamic shapes
             playerIn.openGui(instance, GUI_FURNACE, worldIn, pos.getX(), pos.getY(), pos.getZ());
 
         return true; //TODO: Check if multi-block is formed
