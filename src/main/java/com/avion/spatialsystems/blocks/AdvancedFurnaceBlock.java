@@ -1,6 +1,7 @@
 package com.avion.spatialsystems.blocks;
 
 import com.avion.spatialsystems.SpatialSystems;
+import com.avion.spatialsystems.tile.TileFurnaceBinder;
 import com.avion.spatialsystems.util.EnumLevel;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -10,6 +11,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -62,6 +64,13 @@ public class AdvancedFurnaceBlock extends Block {
     @Override
     public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
         return new ItemStack(this, 1, this.getMetaFromState(world.getBlockState(pos)));
+    }
+
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        TileEntity te;
+        if((te=worldIn.getTileEntity(pos))!=null && te instanceof TileFurnaceBinder) ((TileFurnaceBinder) te).triggerBreak();
+        super.breakBlock(worldIn, pos, state);
     }
 
     @Nullable

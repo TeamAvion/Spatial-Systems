@@ -6,6 +6,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntitySpectralArrow;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.SlotFurnaceFuel;
 import net.minecraft.item.Item;
@@ -16,6 +17,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -43,6 +45,7 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
     protected int burnTime = -1; // Current burn timer
     protected int itemMaxBurn = -1; // Burn timer stop/reset time (relative ticks)
     protected boolean isSmelting = false;
+    private BlockPos[] bound;
 
     @Override
     public void update() {
@@ -77,6 +80,12 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
             markDirty();
         }
     }
+
+    public BlockPos[] getBound(){ return bound; }
+    public void bind(BlockPos[] bound){ this.bound = bound; }
+    public boolean isBound(){ return bound!=null; }
+    public void unbind(){ bound = null; }
+    public void triggerBreak(){ InventoryHelper.dropInventoryItems(world, pos, this); }
 
     protected boolean smeltPossible(){
         ItemStack i;
@@ -1790,7 +1799,7 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
                 "You wouldn't break a bee law.\n" +
                 "\n" +
                 "  \n" +
-                "- Her name's Vanessa.\n" +
+                "- Her tileName's Vanessa.\n" +
                 "- Oh, boy.\n" +
                 "\n" +
                 "  \n" +
@@ -2058,7 +2067,7 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
                 "- I'll bet.\n" +
                 "\n" +
                 "  \n" +
-                "What in the name\n" +
+                "What in the tileName\n" +
                 "of Mighty Hercules is this?\n" +
                 "\n" +
                 "  \n" +
@@ -2594,7 +2603,7 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
                 "in the human world too.\n" +
                 "\n" +
                 "  \n" +
-                "It's a common name. Next week...\n" +
+                "It's a common tileName. Next week...\n" +
                 "\n" +
                 "  \n" +
                 "He looks like you and has a show\n" +
@@ -2961,7 +2970,7 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
                 "\n" +
                 "  \n" +
                 "So, Mr. Sting, thank you for being here.\n" +
-                "Your name intrigues me.\n" +
+                "Your tileName intrigues me.\n" +
                 "\n" +
                 "  \n" +
                 "- Where have I heard it before?\n" +
@@ -2984,7 +2993,7 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
                 "\n" +
                 "  \n" +
                 "for nothing more than\n" +
-                "a prance-about stage name.\n" +
+                "a prance-about stage tileName.\n" +
                 "\n" +
                 "  \n" +
                 "Oh, please.\n" +
@@ -3000,7 +3009,7 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
                 "Or should I say... Mr. Gordon M. Sumner!\n" +
                 "\n" +
                 "  \n" +
-                "That's not his real name?! You idiots!\n" +
+                "That's not his real tileName?! You idiots!\n" +
                 "\n" +
                 "  \n" +
                 "Mr. Liotta, first,\n" +
@@ -3755,7 +3764,7 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
                 "bee-negative nicknames...\n" +
                 "\n" +
                 "  \n" +
-                "But it's just a prance-about stage name!\n" +
+                "But it's just a prance-about stage tileName!\n" +
                 "\n" +
                 "  \n" +
                 "...unnecessary inclusion of honey\n" +

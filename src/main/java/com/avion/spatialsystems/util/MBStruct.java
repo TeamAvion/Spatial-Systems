@@ -15,9 +15,6 @@ import java.util.Map;
 
 @SuppressWarnings("all")
 public class MBStruct {
-    @SuppressWarnings("unchecked")
-    private static final List<EnumFacing> h = Arrays.asList(EnumFacing.HORIZONTALS);
-
     /**
      * Wildcard search operator
      */
@@ -25,6 +22,7 @@ public class MBStruct {
 
     protected final Map<Integer, Plane> structure = new HashMap<Integer, Plane>();
     protected final Map<Character, Pair<ObjectReference<Block>, Optional<Integer>>> mappings = new HashMap<Character, Pair<ObjectReference<Block>, Optional<Integer>>>();
+    public final HashMap<ObjectReference<? extends Block>, WorldPredicate> customBlockHandler = new HashMap<ObjectReference<? extends Block>, WorldPredicate>();
     protected boolean strict = false;
 
     /**
@@ -89,6 +87,15 @@ public class MBStruct {
     public MBStruct registerMapping(char blockMapping, Block mappedBlock){
         if(blockMapping==WLD) throw new RuntimeException("Can't assign wildcard mapping '"+WLD+"' to "+mappedBlock);
         mappings.put(blockMapping, new Pair<ObjectReference<Block>, Optional<Integer>>(new ImmutableReference<Block>(mappedBlock), Optional.<Integer>absent()));
+        return this;
+    }
+
+    public <T extends WorldPredicate> MBStruct registerCustomBlockHandler(Block check, T t){
+        customBlockHandler.put(new ImmutableReference<Block>(check), t);
+        return this;
+    }
+    public <T extends WorldPredicate> MBStruct registerCustomBlockHandler(ObjectReference<Block> check, T t){
+        customBlockHandler.put(check, t);
         return this;
     }
 
@@ -200,7 +207,7 @@ public class MBStruct {
      * @return The flattened array.
      */
     public Pair<BlockPos, Optional<IBlockState>>[] getMap(World w, BlockPos centre, EnumFacing direction){
-        if(!h.contains(direction)) return null;
+        if(!isHorizontal(direction)) return null;
         Plane p;
         Pair<ObjectReference<Block>, Optional<Integer>> p1;
         IBlockState b;
@@ -209,9 +216,14 @@ public class MBStruct {
         if(strict) strictMap = new HashMap<Block, Integer>();
         boolean b1 = false;
         boolean state = false;
+        ObjectReference<? extends Block> o;
+        WorldPredicate w1;
         for(Integer i : structure.keySet())
             for(Pair<BlockPos, Character> pos : (p=structure.get(i)).getPosMap(centre, i, direction))
-                if((b1 = !pos.getKey().equals(centre)) /* Ignore controller block */ && !matches(w, pos.getKey(), pos.getValue(), strictMap)){
+                if((b1 = !pos.getKey().equals(centre)) /* Ignore controller block */ &&
+                        !(((o=getFor(w.getBlockState(pos.getKey()).getBlock()))!=null &&
+                                ((w1=customBlockHandler.get(o)) instanceof MBPredicate?((MBPredicate)w1).apply(w, pos.getKey(), pos.getValue(), strictMap, this, centre):w1.apply(w, pos.getKey(), centre))) ||
+                                matches(w, pos.getKey(), pos.getValue(), strictMap))){
                     return null;
                 }else if(b1 && strict) {
                     if (!strictMap.containsKey((b = w.getBlockState(pos.getKey())))) strictMap.put(b.getBlock(), b.getBlock().getMetaFromState(b)); // Temporary strict-mode metadata mapping
@@ -221,6 +233,11 @@ public class MBStruct {
                     realMap.add(new Pair<BlockPos, Optional<IBlockState>>(pos.getKey(),
                             (p1=mappings.get(pos.getValue())).getValue().isPresent()?Optional.of(w.getBlockState(pos.getKey())):Optional.<IBlockState>absent()));
         return realMap.toArray(new Pair[realMap.size()]);
+    }
+
+    protected ObjectReference<? extends Block> getFor(Block b){
+        for(ObjectReference<? extends Block> o : customBlockHandler.keySet()) if(b.equals(o.get())) return o;
+        return null;
     }
 
     /**
@@ -252,6 +269,28 @@ public class MBStruct {
                         (!p.getValue().isPresent() || b.getBlock().getMetaFromState(b)==p.getValue().or(0)) &&
                         (!strictMap.containsKey(b.getBlock()) || b.getBlock().getMetaFromState(b)==strictMap.get(b.getBlock()))
                 );
+    }
+
+
+
+    protected final boolean isHorizontal(EnumFacing e){ for(EnumFacing e1 : EnumFacing.HORIZONTALS) if(e1==e) return true; return false; }
+
+
+    public static abstract class MBPredicate extends WorldPredicate{
+        private World w;
+        private BlockPos at;
+        private char mapping;
+        private HashMap<Block, Integer> strictMap;
+        private MBStruct mb;
+
+        protected boolean matchesDefault(){ return w==null || at==null || strictMap==null || mb==null || mb.matches(w, at, mapping, strictMap); }
+
+        boolean apply(World w, BlockPos at, char mapping, HashMap<Block, Integer> strictMap, MBStruct mb, BlockPos source){
+            this.w = w; this.at = at; this.strictMap = strictMap; this.mb = mb; this.mapping = mapping;
+            boolean b = apply(w, at, source);
+            w = null; at = null; strictMap = null; mb = null;
+            return b;
+        }
     }
 
     /**

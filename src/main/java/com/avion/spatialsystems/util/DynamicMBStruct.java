@@ -109,11 +109,11 @@ public class DynamicMBStruct {
         purge();
         ArrayList<BlockPos> a = new ArrayList<BlockPos>();
         a.add(start);
-        findAt(w, start, a, new ArrayList<Pair<Block, Integer>>(), mode);
+        findAt(w, start, a, new ArrayList<Pair<Block, Integer>>(), mode, start);
         return a;
     }
 
-    protected void findAt(World w, BlockPos at, List<BlockPos> exclude, ArrayList<Pair<Block, Integer>> mStrict, SearchMode mode){
+    protected void findAt(World w, BlockPos at, List<BlockPos> exclude, ArrayList<Pair<Block, Integer>> mStrict, SearchMode mode, BlockPos source){
         BlockPos[] temp = new BlockPos[mode==CARDINAL?6:mode==CARDINAL_DIAGONAL?14:mode==CROSS?8:26];
         ArrayList<BlockPos> nPos = new ArrayList<BlockPos>();
         int ctr = -1;
@@ -140,14 +140,14 @@ public class DynamicMBStruct {
         boolean b2;
         WorldPredicate p;
         for(BlockPos b : temp)
-            if(((p=getCustomBlockHandler((b1=w.getBlockState(b)).getBlock()))==null || (p instanceof MBPredicate?((MBPredicate)p).apply(w, b, exclude, mStrict, this):p.apply(w, b))) &&
+            if(((p=getCustomBlockHandler((b1=w.getBlockState(b)).getBlock()))==null || (p instanceof MBPredicate?((MBPredicate)p).apply(w, b, exclude, mStrict, this, source):p.apply(w, b, source))) &&
                     defaultApply(exclude, mStrict, b, w, b1)) { // Handling system
                 if(exclude.size()+1>maxSize && maxSize>1) return;
                 exclude.add(b);
                 nPos.add(b);
                 if(strict && !isRegistered(b1.getBlock(), mStrict) && hasSpecificMeta(b1.getBlock())) mStrict.add(new Pair<Block, Integer>(b1.getBlock(), b1.getBlock().getMetaFromState(b1)));
             }
-        for(BlockPos b : nPos) findAt(w, b, exclude, mStrict, mode); // Recursively find more until all blocks have been found
+        for(BlockPos b : nPos) findAt(w, b, exclude, mStrict, mode, source); // Recursively find more until all blocks have been found
     }
 
     boolean defaultApply(List<BlockPos> exclude, ArrayList<Pair<Block, Integer>> mStrict, BlockPos b, World w, IBlockState b1){
@@ -165,11 +165,13 @@ public class DynamicMBStruct {
         return a;
     }
 
-    protected BlockPos getAt(BlockPos relativeTo, EnumFacing direction){
+    //TODO: Move to WorldHelper
+    public static BlockPos getAt(BlockPos relativeTo, EnumFacing direction){
         return new BlockPos(relativeTo.getX()+(direction==SOUTH?-1:direction==NORTH?1:0), relativeTo.getY()+(direction==DOWN?-1:direction==UP?1:0), relativeTo.getZ()+(direction==WEST?-1:direction==EAST?1:0));
     }
 
-    protected BlockPos translate(BlockPos from, EnumFacing... by){
+    //TODO: Move to WorldHelper
+    public static BlockPos translate(BlockPos from, EnumFacing... by){
         for(EnumFacing e : by) from = getAt(from, e);
         return from;
     }
@@ -188,13 +190,13 @@ public class DynamicMBStruct {
 
         public boolean isRegularlyViable(){ return inst.defaultApply(exclude, mStrict, p, w, w.getBlockState(p)); }
 
-        final boolean apply(World w, BlockPos p, List<BlockPos> exclude, ArrayList<Pair<Block, Integer>> mStrict, DynamicMBStruct inst){
+        final boolean apply(World w, BlockPos p, List<BlockPos> exclude, ArrayList<Pair<Block, Integer>> mStrict, DynamicMBStruct inst, BlockPos source){
             this.w = w;
             this.p = p;
             this.exclude = exclude;
             this.mStrict = mStrict;
             this.inst = inst;
-            return apply(w, p);
+            return apply(w, p, source);
         }
     }
 }
