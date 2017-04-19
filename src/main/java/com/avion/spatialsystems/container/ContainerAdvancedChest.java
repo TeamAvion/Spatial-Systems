@@ -1,12 +1,14 @@
 package com.avion.spatialsystems.container;
 
 import com.avion.spatialsystems.tile.TileAdvancedChest;
+import com.avion.spatialsystems.util.LogHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 //Created by Bread10 at 09:52 on 16/04/2017
 public class ContainerAdvancedChest extends Container {
@@ -17,12 +19,14 @@ public class ContainerAdvancedChest extends Container {
     public ContainerAdvancedChest(InventoryPlayer player, TileAdvancedChest te) {
         this.playerInv = player;
         this.tile = te;
+        LogHelper.println("DEBUG >>> Side="+ FMLCommonHandler.instance().getSide().name());
         setupSlots();
     }
 
     public void setupSlots() {
         //reset slots
         this.inventorySlots.clear();
+        this.inventoryItemStacks.clear();
 
         // Tile Iinventory, Slot 0 to getTileSlotsOnPage() - 1
         for (int x = 0; x < getTileSlotsOnPage(); x++) {

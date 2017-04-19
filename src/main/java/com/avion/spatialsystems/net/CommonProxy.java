@@ -1,4 +1,4 @@
-package com.avion.spatialsystems.proxy;
+package com.avion.spatialsystems.net;
 
 import com.avion.spatialsystems.blocks.ModBlocks;
 

@@ -2,7 +2,9 @@ package com.avion.spatialsystems;
 
 import com.avion.spatialsystems.blocks.ModBlocks;
 import com.avion.spatialsystems.gui.GUIHandler;
-import com.avion.spatialsystems.proxy.CommonProxy;
+import com.avion.spatialsystems.net.ChestMessage;
+import com.avion.spatialsystems.net.ChestMessageHandler;
+import com.avion.spatialsystems.net.CommonProxy;
 import com.avion.spatialsystems.util.LogHelper;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -13,6 +15,8 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid = SpatialSystems.MODID, version = SpatialSystems.VERSION)
 public class SpatialSystems {
@@ -21,6 +25,8 @@ public class SpatialSystems {
     public static final String VERSION = "1.0";
     public static final int GUI_FURNACE = 'd' + 'a' + 'n' + 'k'; // Unique values, they said...
     public static final int GUI_CHEST = 'p' + 'e' + 'p' + 'e';
+    public static final byte PACKET_ID = ('R' + 'E' + 'E' + 'E')%256;
+    public SimpleNetworkWrapper net;
 
     public static final CreativeTabs TAB = new CreativeTabs("spatialsystems") {
         @Override
@@ -33,12 +39,15 @@ public class SpatialSystems {
     @Instance
     public static SpatialSystems instance;
 
-    @SidedProxy(clientSide = "com.avion.spatialsystems.proxy.ClientProxy", serverSide = "com.avion.spatialsystems.proxy.ServerProxy")
+    @SidedProxy(clientSide = "com.avion.spatialsystems.net.ClientProxy", serverSide = "com.avion.spatialsystems.net.ServerProxy")
     public static CommonProxy proxy;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         LogHelper.setLogger(event.getModLog());
+        net = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
+        net.registerMessage(ChestMessageHandler.class, ChestMessage.class, PACKET_ID, Side.SERVER);
+
         proxy.preInit();
     }
     

@@ -2,6 +2,7 @@ package com.avion.spatialsystems.gui;
 
 import com.avion.spatialsystems.SpatialSystems;
 import com.avion.spatialsystems.container.ContainerAdvancedChest;
+import com.avion.spatialsystems.net.ChestMessage;
 import com.avion.spatialsystems.tile.TileAdvancedChest;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -58,6 +59,7 @@ public class GUIAdvancedChest extends GuiContainer {
         }
         newPage = MathHelper.clamp(newPage, 1, pages);
         tile.setCurrentPage(newPage);
+        SpatialSystems.instance.net.sendToServer(new ChestMessage(tile.getPos(), tile.getWorld(), tile, newPage));
         ((ContainerAdvancedChest) this.inventorySlots).setupSlots();
     }
 
@@ -84,7 +86,7 @@ public class GUIAdvancedChest extends GuiContainer {
 
     @Override
     public boolean doesGuiPauseGame() {
-        return true;
+        return false;
     }
 
     private int getTileSlotsOnPage() {

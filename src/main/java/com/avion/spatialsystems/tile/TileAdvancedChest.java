@@ -2,7 +2,6 @@ package com.avion.spatialsystems.tile;
 
 import com.avion.spatialsystems.util.WorldHelper;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
@@ -13,7 +12,6 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
-
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
@@ -169,7 +167,7 @@ public class TileAdvancedChest extends TileEntity implements IInventory {
 
     public void setCurrentPage(int currentPage) {
         this.currentPage = currentPage;
-        sync();
+        //sync();
     }
 
     public void sync() {
