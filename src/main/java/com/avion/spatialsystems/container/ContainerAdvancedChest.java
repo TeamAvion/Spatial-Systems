@@ -19,7 +19,7 @@ public class ContainerAdvancedChest extends Container {
     public ContainerAdvancedChest(InventoryPlayer player, TileAdvancedChest te) {
         this.playerInv = player;
         this.tile = te;
-        LogHelper.println("DEBUG >>> Side="+ FMLCommonHandler.instance().getSide().name());
+        te.registerPageTracker(this);
         setupSlots();
     }
 

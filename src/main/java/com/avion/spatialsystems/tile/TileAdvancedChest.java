@@ -1,5 +1,6 @@
 package com.avion.spatialsystems.tile;
 
+import com.avion.spatialsystems.container.ContainerAdvancedChest;
 import com.avion.spatialsystems.util.WorldHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,6 +13,9 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
@@ -20,6 +24,7 @@ public class TileAdvancedChest extends TileEntity implements IInventory {
 
     private NonNullList<ItemStack> inventory = NonNullList.withSize(84, ItemStack.EMPTY);
     protected final ArrayList<EntityPlayer> tracker = new ArrayList<EntityPlayer>();
+    protected ContainerAdvancedChest pageTracker = null;
     private int currentPage = 1;
     private BlockPos[] bound;
 
@@ -167,6 +172,7 @@ public class TileAdvancedChest extends TileEntity implements IInventory {
 
     public void setCurrentPage(int currentPage) {
         this.currentPage = currentPage;
+        if(FMLCommonHandler.instance().getSide()==Side.SERVER && pageTracker!=null) pageTracker.setupSlots();
         //sync();
     }
 
@@ -174,6 +180,10 @@ public class TileAdvancedChest extends TileEntity implements IInventory {
         this.markDirty();
         IBlockState state = this.getWorld().getBlockState(this.getPos());
         this.getWorld().notifyBlockUpdate(this.getPos(), state, state, 3);
+    }
+
+    public void registerPageTracker(ContainerAdvancedChest pageTracker){
+        this.pageTracker = pageTracker;
     }
 
 }
