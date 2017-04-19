@@ -1,7 +1,6 @@
 package com.avion.spatialsystems.tile;
 
 import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.block.BlockFurnace;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntitySpectralArrow;
 import net.minecraft.init.Items;
@@ -9,7 +8,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.SlotFurnaceFuel;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
@@ -18,13 +16,9 @@ import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import javax.annotation.Nonnull;
 
-import static net.minecraft.tileentity.TileEntityFurnace.getItemBurnTime;
+import javax.annotation.Nonnull;
 
 public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModifiable, IInventory, ITickable{
 

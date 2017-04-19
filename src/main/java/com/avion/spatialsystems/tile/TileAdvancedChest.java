@@ -3,6 +3,7 @@ package com.avion.spatialsystems.tile;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -10,6 +11,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
 
@@ -18,6 +20,13 @@ public class TileAdvancedChest extends TileEntity implements IInventory {
 
     private NonNullList<ItemStack> inventory = NonNullList.withSize(84, ItemStack.EMPTY);
     private int currentPage = 1;
+    private BlockPos[] bound;
+
+    public BlockPos[] getBound(){ return bound; }
+    public void bind(BlockPos[] bound){ this.bound = bound; }
+    public boolean isBound(){ return bound!=null; }
+    public void unbind(){ bound = null; }
+    public void triggerBreak(){ InventoryHelper.dropInventoryItems(world, pos, this); }
 
     @Override
     public NBTTagCompound getUpdateTag() {
@@ -53,6 +62,8 @@ public class TileAdvancedChest extends TileEntity implements IInventory {
 
         return compound;
     }
+
+    //* ==================== IInventory Starts Here ======================== *//
 
 
     @Override

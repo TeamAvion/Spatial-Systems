@@ -2,6 +2,10 @@ package com.avion.spatialsystems.blocks;
 
 import com.avion.spatialsystems.SpatialSystems;
 import com.avion.spatialsystems.tile.TileAdvancedChest;
+import com.avion.spatialsystems.tile.TileChestBinder;
+import com.avion.spatialsystems.util.MBStruct;
+import com.google.common.base.Optional;
+import javafx.util.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -68,19 +72,61 @@ public class AdvancedChestController extends Block implements ITileEntityProvide
 
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-        if (!worldIn.isRemote) {
-            TileAdvancedChest te = (TileAdvancedChest) worldIn.getTileEntity(pos);
+        EnumFacing[] e;
+        MBStruct mb;
+        if(!worldIn.isRemote &&
+                ((e=(mb=ModBlocks.chestMultiBlockGrand).findStructure(worldIn, pos)).length!=0 ||
+                (e=(mb=ModBlocks.chestMultiBlockBig).findStructure(worldIn, pos)).length!=0 ||
+                (e=(mb=ModBlocks.chestMultiBlock).findStructure(worldIn, pos)).length!=0) // Static shapes
+                /*(l.size()==26 || l.size()==98 || l.size()==218 || l.size()==1352)*/ && !placer.isSneaking()) { // Dynamic shapes
+            BlockPos[] b;
+            registerUnregistered(worldIn, b=clean(mb.getMap(worldIn, pos, e[0])));
+            ((TileAdvancedChest) worldIn.getTileEntity(pos)).bind(b);
         }
+        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
     }
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (!playerIn.isSneaking()) {
-            ((TileAdvancedChest) worldIn.getTileEntity(pos)).sync();
+        EnumFacing[] e;
+        MBStruct mb;
+        if(!worldIn.isRemote &&
+                ((e=(mb=ModBlocks.chestMultiBlockGrand).findStructure(worldIn, pos)).length!=0 ||
+                (e=(mb=ModBlocks.chestMultiBlockBig).findStructure(worldIn, pos)).length!=0 ||
+                (e=(mb=ModBlocks.chestMultiBlock).findStructure(worldIn, pos)).length!=0) // Static shapes
+                /*(l.size()==26 || l.size()==98 || l.size()==218 || l.size()==1352)*/ && !playerIn.isSneaking()) { // Dynamic shapes
+            BlockPos[] b;
+            registerUnregistered(worldIn, b=clean(mb.getMap(worldIn, pos, e[0])));
+            ((TileAdvancedChest) worldIn.getTileEntity(pos)).bind(b);
             playerIn.openGui(instance, GUI_CHEST, worldIn, pos.getX(), pos.getY(), pos.getZ());
-            return true;
         }
-        return false;
+        return true;
     }
+
+    protected void registerUnregistered(World w, BlockPos[] all){
+        for(BlockPos p : all)
+            if(w.getTileEntity(p)==null){
+                TileEntity t = new TileChestBinder(p);
+                t.setPos(p);
+                t.setWorld(w);
+                w.addTileEntity(t);
+                ModBlocks.advancedChestBlock.updateBlockState(w.getBlockState(p), w, p);
+            }
+    }
+
+    protected void unregister(World w, BlockPos[] all){
+        for(BlockPos p : all)
+            if(w.getTileEntity(p)!=null) {
+                w.removeTileEntity(p);
+                ModBlocks.advancedChestBlock.resetBlockState(w.getBlockState(p), w, p);
+            }
+    }
+
+    protected BlockPos[] clean(Pair<BlockPos, Optional<IBlockState>>[] mapData){
+        BlockPos[] b = new BlockPos[mapData.length];
+        int ctr = -1;
+        for(Pair<BlockPos, Optional<IBlockState>> p : mapData) b[++ctr] = p.getKey();
+        return b;
+    }
+
 }

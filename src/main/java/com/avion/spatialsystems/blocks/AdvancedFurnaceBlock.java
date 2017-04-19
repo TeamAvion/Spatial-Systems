@@ -83,6 +83,6 @@ public class AdvancedFurnaceBlock extends Block {
     @Override
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return new ItemStack(ModBlocks.advancedFurnaceBlock);
+        return new ItemStack(ModBlocks.advancedFurnaceBlock, 1, getMetaFromState(state));
     }
 }

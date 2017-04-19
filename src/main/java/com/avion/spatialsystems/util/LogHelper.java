@@ -15,6 +15,6 @@ public final class LogHelper {
     public static void info(Object message) { log(Level.INFO, message); }
     public static void warning(Object message) { log(Level.WARN, message); }
     public static void error(Object message) { log(Level.ERROR, message); }
-    public static <T> void array(Level level, T[] array) { log(level, Arrays.toString(array)); }
+    public static <T> void array(Level level, T... array) { log(level, Arrays.toString(array)); }
 
 }
