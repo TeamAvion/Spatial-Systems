@@ -1,12 +1,12 @@
 package com.avion.spatialsystems.container;
 
-import com.avion.spatialsystems.SpatialSystems;
 import com.avion.spatialsystems.tile.TileAdvancedChest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 
 //Created by Bread10 at 09:52 on 16/04/2017
 public class ContainerAdvancedChest extends Container {
@@ -65,6 +65,7 @@ public class ContainerAdvancedChest extends Container {
                 slot.onSlotChanged();
             }
         }
+        tile.sync();
         return itemstack;
     }
 
@@ -80,7 +81,7 @@ public class ContainerAdvancedChest extends Container {
     }
 
     private int getTileSlotsOnPage() {
-        return SpatialSystems.clamp(tile.getSizeInventory() - 54 * (tile.getCurrentPage() - 1), 1, 54);
+        return MathHelper.clamp(tile.getSizeInventory() - 54 * (tile.getCurrentPage() - 1), 1, 54);
     }
 
 }

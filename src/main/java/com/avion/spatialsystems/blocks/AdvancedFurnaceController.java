@@ -1,34 +1,38 @@
 package com.avion.spatialsystems.blocks;
 
 import com.avion.spatialsystems.SpatialSystems;
+import com.avion.spatialsystems.tile.TileAdvancedChest;
 import com.avion.spatialsystems.tile.TileAdvancedFurnace;
-import com.avion.spatialsystems.tile.TileFurnaceBinder;
 import com.avion.spatialsystems.util.MBStruct;
-import com.google.common.base.Optional;
-import javafx.util.Pair;
+import com.avion.spatialsystems.util.WorldHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.Rotation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import javax.annotation.Nullable;
+import java.util.List;
+
 import static com.avion.spatialsystems.SpatialSystems.GUI_FURNACE;
 import static com.avion.spatialsystems.SpatialSystems.instance;
 import static com.avion.spatialsystems.blocks.Properties.FACING;
 
 @SuppressWarnings("ALL")
-public class AdvancedFurnaceController extends BlockContainer {
+public class AdvancedFurnaceController extends Block {
 
     public AdvancedFurnaceController(){
         super(Material.ROCK);
@@ -73,10 +77,10 @@ public class AdvancedFurnaceController extends BlockContainer {
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        InventoryHelper.dropInventoryItems(worldIn, pos, (TileAdvancedFurnace) worldIn.getTileEntity(pos));
+        InventoryHelper.dropInventoryItems(worldIn, pos, (IInventory) worldIn.getTileEntity(pos));
         TileAdvancedFurnace t;
         if(((t=(TileAdvancedFurnace)worldIn.getTileEntity(pos))).isBound()){
-            unregister(worldIn, t.getBound());
+            WorldHelper.unbindAll(worldIn, t.getBound());
             t.unbind();
         }
         super.breakBlock(worldIn, pos, state);
@@ -84,7 +88,9 @@ public class AdvancedFurnaceController extends BlockContainer {
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(World world, IBlockState state) { return new TileAdvancedFurnace(); }
+    public TileEntity createTileEntity(World world, IBlockState state) {
+        return new TileAdvancedFurnace();
+    }
 
     @Override
     public boolean hasTileEntity(IBlockState state) {
@@ -96,12 +102,13 @@ public class AdvancedFurnaceController extends BlockContainer {
         //List<BlockPos> l = ModBlocks.dynamicFurnace.find(worldIn, pos); // Load a dynamic size & shape
         EnumFacing[] e;
         MBStruct mb;
-        if(((e=(mb=ModBlocks.furnaceMultiBlockGrand).findStructure(worldIn, pos)).length!=0 ||
+        if(!worldIn.isRemote &&
+                ((e=(mb=ModBlocks.furnaceMultiBlockGrand).findStructure(worldIn, pos)).length!=0 ||
                 (e=(mb=ModBlocks.furnaceMultiBlockBig).findStructure(worldIn, pos)).length!=0 ||
                 (e=(mb=ModBlocks.furnaceMultiBlock).findStructure(worldIn, pos)).length!=0) // Static shapes
                 /*(l.size()==26 || l.size()==98 || l.size()==218 || l.size()==1352)*/ && !placer.isSneaking()) { // Dynamic shapes
             BlockPos[] b;
-            registerUnregistered(worldIn, b=clean(mb.getMap(worldIn, pos, e[0])));
+            WorldHelper.bindAll(worldIn, b=MBStruct.clean(mb.getMap(worldIn, pos, e[0])), pos);
             ((TileAdvancedFurnace) worldIn.getTileEntity(pos)).bind(b);
         }
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
@@ -112,40 +119,17 @@ public class AdvancedFurnaceController extends BlockContainer {
         //List<BlockPos> l = ModBlocks.dynamicFurnace.find(worldIn, pos); // Load a dynamic size & shape
         EnumFacing[] e;
         MBStruct mb;
-        if(((e=(mb=ModBlocks.furnaceMultiBlockGrand).findStructure(worldIn, pos)).length!=0 ||
+        if(!worldIn.isRemote &&
+                ((e=(mb=ModBlocks.furnaceMultiBlockGrand).findStructure(worldIn, pos)).length!=0 ||
                 (e=(mb=ModBlocks.furnaceMultiBlockBig).findStructure(worldIn, pos)).length!=0 ||
                 (e=(mb=ModBlocks.furnaceMultiBlock).findStructure(worldIn, pos)).length!=0) // Static shapes
                 /*(l.size()==26 || l.size()==98 || l.size()==218 || l.size()==1352)*/ && !playerIn.isSneaking()) { // Dynamic shapes
             BlockPos[] b;
-            registerUnregistered(worldIn, b=clean(mb.getMap(worldIn, pos, e[0])));
+            WorldHelper.bindAll(worldIn, b=MBStruct.clean(mb.getMap(worldIn, pos, e[0])), pos);
             ((TileAdvancedFurnace) worldIn.getTileEntity(pos)).bind(b);
             playerIn.openGui(instance, GUI_FURNACE, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            return true;
         }
-        return true; //TODO: Check if multi-block is formed
+        return false;
     }
-
-    protected void registerUnregistered(World w, BlockPos[] all){
-        for(BlockPos p : all)
-            if(w.getTileEntity(p)==null){
-                TileEntity t = new TileFurnaceBinder(p);
-                t.setPos(p);
-                t.setWorld(w);
-                w.addTileEntity(t);
-            }
-    }
-
-    protected void unregister(World w, BlockPos[] all){
-        for(BlockPos p : all)
-            if(w.getTileEntity(p)!=null)
-                w.removeTileEntity(p);
-    }
-
-    protected BlockPos[] clean(Pair<BlockPos, Optional<IBlockState>>[] mapData){
-        BlockPos[] b = new BlockPos[mapData.length];
-        int ctr = -1;
-        for(Pair<BlockPos, Optional<IBlockState>> p : mapData) b[++ctr] = p.getKey();
-        return b;
-    }
-
-    @Nullable @Override public TileEntity createNewTileEntity(World worldIn, int meta) { return new TileAdvancedFurnace(); }
 }

@@ -6,8 +6,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import scala.actors.threadpool.Arrays;
+
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -163,7 +168,7 @@ public class MBStruct {
      * @param centre Where the search is originating from. (In the case of multiblocks, this is usually the controller's position).
      * @return Array of all directions the structure was found.
      */
-    public EnumFacing[] findStructure(World w, BlockPos centre){ return findStructure(w, centre, EnumFacing.HORIZONTALS); }
+    public EnumFacing[] findStructure(IBlockAccess w, BlockPos centre){ return findStructure(w, centre, EnumFacing.HORIZONTALS); }
 
     /**
      * Search for the given block structure/collection in the given orientations.
@@ -172,7 +177,7 @@ public class MBStruct {
      * @param search Which directions the structure is allowed to face. (Direction is considered as the direction of an observer standing in layer -1 looking at layer 0)
      * @return Array of all directions where the structure was found.
      */
-    public EnumFacing[] findStructure(World w, BlockPos centre, EnumFacing... search){
+    public EnumFacing[] findStructure(IBlockAccess w, BlockPos centre, EnumFacing... search){
         List<EnumFacing> l = new ArrayList<EnumFacing>();
         for(EnumFacing f : search)
             if(findStructure(w, centre, f))
@@ -197,7 +202,7 @@ public class MBStruct {
         return m;
     }
 
-    protected boolean findStructure(World w, BlockPos centre, EnumFacing dir){ return getMap(w, centre, dir)!=null; }
+    protected boolean findStructure(IBlockAccess w, BlockPos centre, EnumFacing dir){ return getMap(w, centre, dir)!=null; }
 
     /**
      * Gets a flattened array of all positions corresponding to the supplied model with the properly calculated metadata values (only if supplied or in strict mode).
@@ -206,7 +211,7 @@ public class MBStruct {
      * @param direction Direction the structure should point towards. (Higher relative offset values will be further away in this direction).
      * @return The flattened array.
      */
-    public Pair<BlockPos, Optional<IBlockState>>[] getMap(World w, BlockPos centre, EnumFacing direction){
+    public Pair<BlockPos, Optional<IBlockState>>[] getMap(IBlockAccess w, BlockPos centre, EnumFacing direction){
         if(!isHorizontal(direction)) return null;
         Plane p;
         Pair<ObjectReference<Block>, Optional<Integer>> p1;
@@ -252,6 +257,19 @@ public class MBStruct {
      */
     public MBStruct setStrict(boolean strict){ this.strict = strict; return this; }
 
+    public void debug(){
+        LogHelper.println("\n-- MB structure debug --\n-- Strict: "+strict+" --\n-- Begin character map dump --");
+        for(Character c : mappings.keySet()) LogHelper.println("-- '"+c+"' -> Meta: "+(mappings.get(c).getValue().isPresent()?mappings.get(c).getValue():"no")+", Block: "+mappings.get(c).getKey().get());
+        LogHelper.println("-- End character map dump --\n-- Begin plane dump --");
+        for(Integer i : structure.keySet()){
+            LogHelper.println("-- V2 offset: "+i+" --");
+            structure.get(i).debug();
+        }
+        LogHelper.println("-- End plane dump --\n-- Begin custom block handler dump --");
+        for(ObjectReference<? extends Block> o : customBlockHandler.keySet()) LogHelper.println("-- "+o.get()+" --");
+        LogHelper.println("-- End custom block handler dubug --\nThis concludes the dump :)\n");
+    }
+
     /**
      * The assigned wildcard character {@link MBStruct#WLD} will always be considered a wildcard.
      * @param w World to check.
@@ -259,7 +277,7 @@ public class MBStruct {
      * @param mapping Character mapping to check.
      * @return Whether or not the given position matches the multi-block structure.
      */
-    protected boolean matches(World w, BlockPos at, char mapping, HashMap<Block, Integer> strictMap){
+    protected boolean matches(IBlockAccess w, BlockPos at, char mapping, HashMap<Block, Integer> strictMap){
         if(mapping!=WLD && !mappings.containsKey(mapping)) throw new RuntimeException("Unregistered character-block mapping '"+mapping+"'");
         IBlockState b;
         Pair<ObjectReference<Block>, Optional<Integer>> p;
@@ -271,13 +289,18 @@ public class MBStruct {
                 );
     }
 
-
-
     protected final boolean isHorizontal(EnumFacing e){ for(EnumFacing e1 : EnumFacing.HORIZONTALS) if(e1==e) return true; return false; }
 
 
+    public static BlockPos[] clean(Pair<BlockPos, Optional<IBlockState>>[] mapData){
+        BlockPos[] b = new BlockPos[mapData.length];
+        int ctr = -1;
+        for(Pair<BlockPos, Optional<IBlockState>> p : mapData) b[++ctr] = p.getKey();
+        return b;
+    }
+
     public static abstract class MBPredicate extends WorldPredicate{
-        private World w;
+        private IBlockAccess w;
         private BlockPos at;
         private char mapping;
         private HashMap<Block, Integer> strictMap;
@@ -285,7 +308,7 @@ public class MBStruct {
 
         protected boolean matchesDefault(){ return w==null || at==null || strictMap==null || mb==null || mb.matches(w, at, mapping, strictMap); }
 
-        boolean apply(World w, BlockPos at, char mapping, HashMap<Block, Integer> strictMap, MBStruct mb, BlockPos source){
+        boolean apply(IBlockAccess w, BlockPos at, char mapping, HashMap<Block, Integer> strictMap, MBStruct mb, BlockPos source){
             this.w = w; this.at = at; this.strictMap = strictMap; this.mb = mb; this.mapping = mapping;
             boolean b = apply(w, at, source);
             w = null; at = null; strictMap = null; mb = null;
@@ -334,6 +357,34 @@ public class MBStruct {
                 for(int j = 0; j<width; ++j)
                     c[i][j] = map;
             addPlane(c);
+            return this;
+        }
+
+        public Plane graftPlane(char map, int width, int height, int hOff, int vOff){
+            int vCtr, hCtr = 0;
+            for(int i = 0; i<rows.size(); ++i){
+                if(hCtr>=height) break;
+                if(i<hOff) continue;
+                vCtr = 0;
+                char[] c = rows.get(i);
+                if(c.length<vOff+width){
+                    char[] c1 = new char[vOff+width];
+                    System.arraycopy(c, 0, c1, 0, c.length);
+                    c = c1;
+                }
+                for(int j = 0; j<c.length; ++j)
+                    if(j<vOff) continue;
+                    else if(vCtr>=width) break;
+                    else c[++vCtr] = map;
+                rows.set(i, c);
+                ++hCtr;
+            }
+            for(int i = 0; i<height-hCtr; ++i){
+                char[] c = new char[vOff+width];
+                for(int j = 0; j<vOff; ++j) c[j] = WLD;
+                for(int j = 0; j<width; ++j) c[vOff+j] = map;
+                rows.add(c);
+            }
             return this;
         }
 
@@ -423,6 +474,19 @@ public class MBStruct {
             Plane p = new Plane(vOff, hOff);
             for(char[] c : rows) p.rows.add(Arrays.copyOf(c, c.length));
             return p;
+        }
+
+        /**
+         * Debug method to dump information about plane.
+         */
+        public void debug(){
+            LogHelper.println("\n-- Plane debug --\n-- Vertical offset: "+vOff+" --\n-- Horizontal offset: "+hOff+" --\n-- Begin search plane dump --");
+            for(char[] c : rows){
+                LogHelper.print("\t");
+                for(char c1 : c) LogHelper.print(c1+" ");
+                LogHelper.println();
+            }
+            LogHelper.println("-- End search plane dump --\n");
         }
     }
 }

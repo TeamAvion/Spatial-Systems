@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -104,8 +105,8 @@ public class DynamicMBStruct {
 
     public DynamicMBStruct setDefaultSearchMode(SearchMode mode){ defaultSearchMode = mode; return this; }
 
-    public List<BlockPos> find(World w, BlockPos start){ return find(w, start, defaultSearchMode); }
-    public List<BlockPos> find(World w, BlockPos start, SearchMode mode){
+    public List<BlockPos> find(IBlockAccess w, BlockPos start){ return find(w, start, defaultSearchMode); }
+    public List<BlockPos> find(IBlockAccess w, BlockPos start, SearchMode mode){
         purge();
         ArrayList<BlockPos> a = new ArrayList<BlockPos>();
         a.add(start);
@@ -113,7 +114,7 @@ public class DynamicMBStruct {
         return a;
     }
 
-    protected void findAt(World w, BlockPos at, List<BlockPos> exclude, ArrayList<Pair<Block, Integer>> mStrict, SearchMode mode, BlockPos source){
+    protected void findAt(IBlockAccess w, BlockPos at, List<BlockPos> exclude, ArrayList<Pair<Block, Integer>> mStrict, SearchMode mode, BlockPos source){
         BlockPos[] temp = new BlockPos[mode==CARDINAL?6:mode==CARDINAL_DIAGONAL?14:mode==CROSS?8:26];
         ArrayList<BlockPos> nPos = new ArrayList<BlockPos>();
         int ctr = -1;
@@ -150,7 +151,7 @@ public class DynamicMBStruct {
         for(BlockPos b : nPos) findAt(w, b, exclude, mStrict, mode, source); // Recursively find more until all blocks have been found
     }
 
-    boolean defaultApply(List<BlockPos> exclude, ArrayList<Pair<Block, Integer>> mStrict, BlockPos b, World w, IBlockState b1){
+    boolean defaultApply(List<BlockPos> exclude, ArrayList<Pair<Block, Integer>> mStrict, BlockPos b, IBlockAccess w, IBlockState b1){
         return (!exclude.contains(b) && isAllowed(w.getBlockState(b)) && (!strict || (!hasSpecificMeta(b1.getBlock()) && isAllowedStrict(b1, mStrict))));
     }
 
@@ -182,7 +183,7 @@ public class DynamicMBStruct {
 
     public static abstract class MBPredicate extends WorldPredicate {
 
-        private World w;
+        private IBlockAccess w;
         private BlockPos p;
         private List<BlockPos> exclude;
         private ArrayList<Pair<Block, Integer>> mStrict;
@@ -190,7 +191,7 @@ public class DynamicMBStruct {
 
         public boolean isRegularlyViable(){ return inst.defaultApply(exclude, mStrict, p, w, w.getBlockState(p)); }
 
-        final boolean apply(World w, BlockPos p, List<BlockPos> exclude, ArrayList<Pair<Block, Integer>> mStrict, DynamicMBStruct inst, BlockPos source){
+        final boolean apply(IBlockAccess w, BlockPos p, List<BlockPos> exclude, ArrayList<Pair<Block, Integer>> mStrict, DynamicMBStruct inst, BlockPos source){
             this.w = w;
             this.p = p;
             this.exclude = exclude;

@@ -5,9 +5,7 @@ import com.avion.spatialsystems.automation.Infer;
 import com.avion.spatialsystems.automation.NoMeta;
 import com.avion.spatialsystems.automation.NoTile;
 import com.avion.spatialsystems.items.ItemBlockMeta;
-import com.avion.spatialsystems.tile.TileAdvancedChest;
-import com.avion.spatialsystems.tile.TileAdvancedFurnace;
-import com.avion.spatialsystems.tile.TileFurnaceBinder;
+import com.avion.spatialsystems.tile.*;
 import com.avion.spatialsystems.util.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -15,6 +13,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
@@ -25,40 +24,60 @@ import static com.avion.spatialsystems.util.MBStruct.WLD;
 public class ModBlocks {
 
     // Auto-injected objects
-    public static @Automate(itemBlock = ItemBlockMeta.class, meta = EnumLevel.class)            AdvancedFurnaceBlock advancedFurnaceBlock;
-    public static @Automate(tile = TileAdvancedFurnace.class, tileName = "Advanced Furnace")    AdvancedFurnaceController advancedFurnaceController;
-    public static @Automate(tile = TileAdvancedChest.class, tileName = "Advanced Chest")        AdvancedChestController advancedChestController;
-    public static @Automate                                                                     AdvancedChestBlock advancedChestBlock;
+    public static @Automate(itemBlock = ItemBlockMeta.class, meta = EnumLevel.class, tile = TileFurnaceBinder.class, tileName = "Furnace Binder")   AdvancedFurnaceBlock        advancedFurnaceBlock;
+    public static @Automate(tile = TileAdvancedFurnace.class, tileName = "Advanced Furnace")                                                        AdvancedFurnaceController   advancedFurnaceController;
+    public static @Automate(tile = TileAdvancedChest.class, tileName = "Advanced Chest")                                                            AdvancedChestController     advancedChestController;
+    public static @Automate(tile = TileChestBinder.class, tileName = "Chest Binder")                                                                AdvancedChestBlock          advancedChestBlock;
 
     public static final char PMC = 'b'; // Primary mapping character
 
     private static final MBStruct.MBPredicate tilePred = new MBStruct.MBPredicate() {
         @Override
-        public boolean apply(World w, BlockPos p, BlockPos source) {
+        public boolean apply(IBlockAccess w, BlockPos p, BlockPos source) {
             TileEntity e;
-            return this.matchesDefault() && ((e=w.getTileEntity(p))==null || (e instanceof TileFurnaceBinder && ((TileFurnaceBinder) e).boundSource.equals(source)));
+            return this.matchesDefault() && ((e=w.getTileEntity(p))==null || (e instanceof BoundTile && ((BoundTile) e).isBound(source)));
         }
     };
     public static final MBStruct chestMultiBlock = new MBStruct()
             .addLayer(0, new MBStruct.Plane(1, 1).addPlane(PMC, 3, 3).replace(WLD, 1, 1)) // Layer 0
-            .addLayer(1, new MBStruct.Plane(1, 1).addPlane(PMC, 3, 3)) // Layer 1
-            .addLayer(2, 1) // Layer 2
+            .addLayer(1, new MBStruct.Plane(1, 1).addPlane(PMC, 3, 3).replace(WLD, 1, 1)) // Layer 1
+            .addLayer(2, new MBStruct.Plane(1, 1).addPlane(PMC, 3, 3)) // Layer 2
             .registerLazyMapping(PMC, FieldReference.<Block>staticFromHere("advancedChestBlock"))
             .setStrict(true);
     // Exactly the same as above except different mapping for primary mapping character
-    public static final MBStruct furnaceMultiBlock = chestMultiBlock.copy().registerLazyMapping(PMC, FieldReference.<Block>staticFromHere("advancedFurnaceBlock"))
+    public static final MBStruct furnaceMultiBlock = chestMultiBlock
+            .copy()
+            .registerLazyMapping(PMC, FieldReference.<Block>staticFromHere("advancedFurnaceBlock"))
             .registerCustomBlockHandler(FieldReference.<Block>staticFromHere("advancedFurnaceBlock"), tilePred);
     public static final MBStruct chestMultiBlockBig = new MBStruct()
-            .addLayer(0, new MBStruct.Plane(3, 3).addPlane(PMC, 5, 5).replace(WLD, 2, 2))
-            .addLayers(1, 4, new MBStruct.Plane(3, 3).addPlane(PMC, 5, 5))
+            .addLayer(0, new MBStruct.Plane(2, 2)
+                    .addPlane(PMC, 5, 5)
+                    .replace(WLD, 2, 2)
+            )
+            .addLayers(1, 3, new MBStruct.Plane(2, 2)
+                    .addPlane(PMC, 5, 5)
+                    .graftPlane(WLD, 3, 3, 1, 1)
+            )
+            .addLayer(4, new MBStruct.Plane(2, 2)
+                    .addPlane(PMC, 5, 5)
+            )
             .registerLazyMapping(PMC, FieldReference.<Block>staticFromHere("advancedChestBlock"))
             .setStrict(true)
             .registerCustomBlockHandler(FieldReference.<Block>staticFromHere("advancedChestBlock"), tilePred);
     public static final MBStruct furnaceMultiBlockBig = chestMultiBlockBig.copy().registerLazyMapping(PMC, FieldReference.<Block>staticFromHere("advancedFurnaceBlock"))
             .registerCustomBlockHandler(FieldReference.<Block>staticFromHere("advancedFurnaceBlock"), tilePred);
     public static final MBStruct chestMultiBlockGrand = new MBStruct()
-            .addLayer(0, new MBStruct.Plane(4, 4).addPlane(PMC, 7, 7).replace(WLD, 3, 3))
-            .addLayers(1, 6, new MBStruct.Plane(3, 3).addPlane(PMC, 7, 7))
+            .addLayer(0, new MBStruct.Plane(3, 3)
+                    .addPlane(PMC, 7, 7)
+                    .replace(WLD, 3, 3)
+            )
+            .addLayers(1, 5, new MBStruct.Plane(3, 3)
+                    .addPlane(PMC, 7, 7)
+                    .graftPlane(WLD, 5, 5, 1, 1)
+            )
+            .addLayer(6, new MBStruct.Plane(3, 3)
+                    .addPlane(PMC, 7, 7)
+            )
             .registerLazyMapping(PMC, FieldReference.<Block>staticFromHere("advancedChestBlock"))
             .setStrict(true)
             .registerCustomBlockHandler(FieldReference.<Block>staticFromHere("advancedChestBlock"), tilePred);

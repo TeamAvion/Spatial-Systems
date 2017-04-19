@@ -1,9 +1,10 @@
 package com.avion.spatialsystems.tile;
 
+import com.avion.spatialsystems.util.WorldHelper;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,11 +15,13 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 
 //Created by Bread10 at 10:20 on 15/04/2017
 public class TileAdvancedChest extends TileEntity implements IInventory {
 
     private NonNullList<ItemStack> inventory = NonNullList.withSize(84, ItemStack.EMPTY);
+    protected final ArrayList<EntityPlayer> tracker = new ArrayList<EntityPlayer>();
     private int currentPage = 1;
     private BlockPos[] bound;
 
@@ -26,7 +29,14 @@ public class TileAdvancedChest extends TileEntity implements IInventory {
     public void bind(BlockPos[] bound){ this.bound = bound; }
     public boolean isBound(){ return bound!=null; }
     public void unbind(){ bound = null; }
-    public void triggerBreak(){ InventoryHelper.dropInventoryItems(world, pos, this); }
+    public void triggerBreak(BlockPos at){
+        //InventoryHelper.dropInventoryItems(world, pos, this);
+        WorldHelper.dropItem(getWorld(), at, inventory);
+        for(EntityPlayer e : tracker)
+            if(e.openContainer!=null) e.openContainer.onContainerClosed(e);
+            else tracker.remove(e);
+        markDirty();
+    }
 
     @Override
     public NBTTagCompound getUpdateTag() {
@@ -73,18 +83,11 @@ public class TileAdvancedChest extends TileEntity implements IInventory {
 
     @Override
     public boolean isEmpty() {
-        for (ItemStack s : inventory) {
-            if (!s.isEmpty()) {
-                return false;
-            }
-        }
+        for (ItemStack s : inventory) if (!s.isEmpty()) return false;
         return true;
     }
 
-    @Override
-    public ItemStack getStackInSlot(int index) {
-        return inventory.get(index);
-    }
+    @Override public ItemStack getStackInSlot(int index) { return inventory.get(index); }
 
     @Override
     public ItemStack decrStackSize(int index, int count) {
@@ -117,12 +120,12 @@ public class TileAdvancedChest extends TileEntity implements IInventory {
 
     @Override
     public void openInventory(EntityPlayer player) {
-
+        tracker.add(player);
     }
 
     @Override
     public void closeInventory(EntityPlayer player) {
-
+        tracker.add(player);
     }
 
     @Override

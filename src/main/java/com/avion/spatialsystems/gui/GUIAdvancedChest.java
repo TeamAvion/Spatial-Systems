@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 
 import java.io.IOException;
 
@@ -55,7 +56,7 @@ public class GUIAdvancedChest extends GuiContainer {
                 newPage++;
                 break;
         }
-        newPage = SpatialSystems.clamp(newPage, 1, pages);
+        newPage = MathHelper.clamp(newPage, 1, pages);
         tile.setCurrentPage(newPage);
         ((ContainerAdvancedChest) this.inventorySlots).setupSlots();
     }
@@ -87,7 +88,7 @@ public class GUIAdvancedChest extends GuiContainer {
     }
 
     private int getTileSlotsOnPage() {
-        return SpatialSystems.clamp(tile.getSizeInventory() - 54 * (tile.getCurrentPage() - 1), 1, 54);
+        return MathHelper.clamp(tile.getSizeInventory() - 54 * (tile.getCurrentPage() - 1), 0, 54);
     }
 
 }

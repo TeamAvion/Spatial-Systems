@@ -14,7 +14,8 @@ public class ClientProxy extends CommonProxy {
     public void init(){
         super.init();
         ModBlocks.registerRenders();
-        Map<String, String> localized = (Map<String, String>) RefHelper.getValue("properties", RefHelper.getValue("i18nLocale", null, I18n.class), Locale.class);
+        // Raw localized data
+        //Map<String, String> localized = (Map<String, String>) RefHelper.getValue("properties", RefHelper.getValue("i18nLocale", null, I18n.class), Locale.class);
     }
 
 }

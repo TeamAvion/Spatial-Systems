@@ -13,7 +13,6 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 @Mod(modid = SpatialSystems.MODID, version = SpatialSystems.VERSION)
 public class SpatialSystems {
@@ -47,16 +46,7 @@ public class SpatialSystems {
     public void init(FMLInitializationEvent event) {
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new GUIHandler()); // Memes are created here
         proxy.init(); // Renders are created here
-    }
 
-    public static int clamp(int n, int min, int max) {
-        if (n < min) {
-            return min;
-        }
-        if (n > max) {
-            return max;
-        }
-        return n;
     }
 
 
