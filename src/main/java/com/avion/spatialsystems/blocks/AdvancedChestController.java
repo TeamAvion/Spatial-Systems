@@ -2,7 +2,6 @@ package com.avion.spatialsystems.blocks;
 
 import com.avion.spatialsystems.SpatialSystems;
 import com.avion.spatialsystems.tile.TileAdvancedChest;
-import com.avion.spatialsystems.tile.TileAdvancedFurnace;
 import com.avion.spatialsystems.util.MBStruct;
 import com.avion.spatialsystems.util.WorldHelper;
 import net.minecraft.block.Block;
@@ -10,7 +9,6 @@ import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -20,12 +18,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.Rotation;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
 import javax.annotation.Nullable;
-import java.util.List;
 
 import static com.avion.spatialsystems.SpatialSystems.GUI_CHEST;
 import static com.avion.spatialsystems.SpatialSystems.instance;

@@ -5,8 +5,14 @@ import com.avion.spatialsystems.automation.Infer;
 import com.avion.spatialsystems.automation.NoMeta;
 import com.avion.spatialsystems.automation.NoTile;
 import com.avion.spatialsystems.items.ItemBlockMeta;
-import com.avion.spatialsystems.tile.*;
-import com.avion.spatialsystems.util.*;
+import com.avion.spatialsystems.tile.BoundTile;
+import com.avion.spatialsystems.tile.TileAdvancedChest;
+import com.avion.spatialsystems.tile.TileAdvancedFurnace;
+import com.avion.spatialsystems.tile.TileFurnaceBinder;
+import com.avion.spatialsystems.util.DynamicMBStruct;
+import com.avion.spatialsystems.util.EnumLevel;
+import com.avion.spatialsystems.util.FieldReference;
+import com.avion.spatialsystems.util.MBStruct;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -14,11 +20,12 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+
 import static com.avion.spatialsystems.util.MBStruct.WLD;
 
 public class ModBlocks {
@@ -27,7 +34,7 @@ public class ModBlocks {
     public static @Automate(itemBlock = ItemBlockMeta.class, meta = EnumLevel.class, tile = TileFurnaceBinder.class, tileName = "Furnace Binder")   AdvancedFurnaceBlock        advancedFurnaceBlock;
     public static @Automate(tile = TileAdvancedFurnace.class, tileName = "Advanced Furnace")                                                        AdvancedFurnaceController   advancedFurnaceController;
     public static @Automate(tile = TileAdvancedChest.class, tileName = "Advanced Chest")                                                            AdvancedChestController     advancedChestController;
-    public static @Automate(tile = TileChestBinder.class, tileName = "Chest Binder")                                                                AdvancedChestBlock          advancedChestBlock;
+    public static @Automate                                                                                                                         AdvancedChestBlock          advancedChestBlock;
 
     public static final char PMC = 'b'; // Primary mapping character
 
