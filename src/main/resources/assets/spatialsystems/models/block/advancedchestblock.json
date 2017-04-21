@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "spatialsystems:blocks/advancedchestblock"
+    "all": "spatialsystems:blocks/advancedchestnormal"
   }
 }
