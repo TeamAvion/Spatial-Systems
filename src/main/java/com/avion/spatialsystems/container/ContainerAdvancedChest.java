@@ -1,16 +1,13 @@
 package com.avion.spatialsystems.container;
 
 import com.avion.spatialsystems.tile.TileAdvancedChest;
-import com.avion.spatialsystems.util.LogHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
-//Created by Bread10 at 09:52 on 16/04/2017
 public class ContainerAdvancedChest extends Container {
 
     private final InventoryPlayer playerInv;
@@ -19,8 +16,8 @@ public class ContainerAdvancedChest extends Container {
     public ContainerAdvancedChest(InventoryPlayer player, TileAdvancedChest te) {
         this.playerInv = player;
         this.tile = te;
-        te.registerPageTracker(this);
         setupSlots();
+        te.registerPageTracker(this);
     }
 
     public void setupSlots() {
@@ -30,7 +27,7 @@ public class ContainerAdvancedChest extends Container {
 
         // Tile Iinventory, Slot 0 to getTileSlotsOnPage() - 1
         for (int x = 0; x < getTileSlotsOnPage(); x++) {
-            this.addSlotToContainer(new Slot(tile, x + 54 * (tile.getCurrentPage() - 1), 18 * (x % 9) + 8, 18 * (x / 9) + 18));
+            this.addSlotToContainer(new Slot(tile, x, 18 * (x % 9) + 8, 18 * (x / 9) + 18));
         }
 
         // Player Inventory, Slot 9-35, Slot IDs getTileSlotsOnPage() to getTileSlotsOnPage() + 26
@@ -79,13 +76,14 @@ public class ContainerAdvancedChest extends Container {
         tile.sync();
     }
 
+
     @Override
-    public boolean canInteractWith(EntityPlayer playerIn) {
-        return true;
+    public boolean canInteractWith(EntityPlayer par1EntityPlayer){
+        return tile.isUsableByPlayer(par1EntityPlayer);
     }
 
     private int getTileSlotsOnPage() {
-        return MathHelper.clamp(tile.getSizeInventory() - 54 * (tile.getCurrentPage() - 1), 1, 54);
+        return MathHelper.clamp(tile.getSizeInventory() - ((tile.getCurrentPage()-1) * 54), 1, 54);
     }
 
 }

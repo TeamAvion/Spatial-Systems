@@ -28,7 +28,7 @@ public class GUIAdvancedChest extends GuiContainer {
     public GUIAdvancedChest(InventoryPlayer playerInv, TileAdvancedChest tile) {
         super(new ContainerAdvancedChest(playerInv, tile));
 
-        pages = (int) Math.floor(tile.getSizeInventory() / 54) + 1;
+        pages = (int) Math.floor(tile.getSizeInventory() / 54);
 
         this.playerInv = playerInv;
         this.tile = tile;
@@ -42,8 +42,8 @@ public class GUIAdvancedChest extends GuiContainer {
         super.initGui();
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
-        this.buttonList.add(new GuiButton(0, i+ 102, j+ 126, 14, 12, "<"));
-        this.buttonList.add(new GuiButton(1, i+ 142, j+ 126, 14, 12, ">"));
+        this.buttonList.add(new GuiButton(0, i+ 105, j+ 126, 14, 12, "<"));
+        this.buttonList.add(new GuiButton(1, i+ 155, j+ 126, 14, 12, ">"));
     }
 
     @Override
@@ -67,7 +67,7 @@ public class GUIAdvancedChest extends GuiContainer {
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         this.fontRendererObj.drawString(I18n.format("container.advancedchest"), 8, 6, 4210752);
         this.fontRendererObj.drawString(this.playerInv.getDisplayName().getUnformattedText(), 8, 129, 4210752);
-        this.fontRendererObj.drawString(tile.getCurrentPage() + "/" + pages, 120, 129, 4210752);
+        this.fontRendererObj.drawString(tile.getCurrentPage() + "/" + pages, 122, 129, 4210752);
     }
 
     @Override

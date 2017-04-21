@@ -7,7 +7,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -119,23 +118,23 @@ public class DynamicMBStruct {
         ArrayList<BlockPos> nPos = new ArrayList<BlockPos>();
         int ctr = -1;
         if(mode!=CROSS){
-            for(int i = 0; i<EnumFacing.values().length; ++i) temp[++ctr] = getAt(at, EnumFacing.values()[i]);
+            for(int i = 0; i<EnumFacing.values().length; ++i) temp[++ctr] = WorldHelper.getAt(at, EnumFacing.values()[i]);
             if(mode==CARDINAL_DIAGONAL || mode==CUBIC){
                 for(int i = 0; (i/2)<EnumFacing.HORIZONTALS.length; i+=2){
-                    temp[++ctr] = translate(at, HORIZONTALS[i], UP);
-                    temp[++ctr] = translate(at, HORIZONTALS[i], DOWN);
+                    temp[++ctr] = WorldHelper.translate(at, HORIZONTALS[i], UP);
+                    temp[++ctr] = WorldHelper.translate(at, HORIZONTALS[i], DOWN);
                 }
             }
         }
         if(mode==CROSS || mode==CUBIC){
-            temp[++ctr] = translate(at, UP, EAST, NORTH);
-            temp[++ctr] = translate(at, UP, EAST, SOUTH);
-            temp[++ctr] = translate(at, UP, WEST, NORTH);
-            temp[++ctr] = translate(at, UP, WEST, SOUTH);
-            temp[++ctr] = translate(at, DOWN, EAST, NORTH);
-            temp[++ctr] = translate(at, DOWN, EAST, SOUTH);
-            temp[++ctr] = translate(at, DOWN, WEST, NORTH);
-            temp[++ctr] = translate(at, DOWN, WEST, SOUTH);
+            temp[++ctr] = WorldHelper.translate(at, UP, EAST, NORTH);
+            temp[++ctr] = WorldHelper.translate(at, UP, EAST, SOUTH);
+            temp[++ctr] = WorldHelper.translate(at, UP, WEST, NORTH);
+            temp[++ctr] = WorldHelper.translate(at, UP, WEST, SOUTH);
+            temp[++ctr] = WorldHelper.translate(at, DOWN, EAST, NORTH);
+            temp[++ctr] = WorldHelper.translate(at, DOWN, EAST, SOUTH);
+            temp[++ctr] = WorldHelper.translate(at, DOWN, WEST, NORTH);
+            temp[++ctr] = WorldHelper.translate(at, DOWN, WEST, SOUTH);
         }
         IBlockState b1;
         boolean b2;
@@ -164,17 +163,6 @@ public class DynamicMBStruct {
         ArrayList<Pair<ObjectReference<? extends Block>, Optional<Integer>>> a = new ArrayList<Pair<ObjectReference<? extends Block>, Optional<Integer>>>();
         for(Pair<ObjectReference<? extends Block>, Optional<Integer>> p : search.values()) if(p.getKey().get().equals(b)) a.add(p);
         return a;
-    }
-
-    //TODO: Move to WorldHelper
-    public static BlockPos getAt(BlockPos relativeTo, EnumFacing direction){
-        return new BlockPos(relativeTo.getX()+(direction==SOUTH?-1:direction==NORTH?1:0), relativeTo.getY()+(direction==DOWN?-1:direction==UP?1:0), relativeTo.getZ()+(direction==WEST?-1:direction==EAST?1:0));
-    }
-
-    //TODO: Move to WorldHelper
-    public static BlockPos translate(BlockPos from, EnumFacing... by){
-        for(EnumFacing e : by) from = getAt(from, e);
-        return from;
     }
 
     public void isBlockViable(){}

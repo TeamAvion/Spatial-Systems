@@ -1,7 +1,10 @@
 package com.avion.spatialsystems.tile;
 
+import com.avion.spatialsystems.gui.GUIAdvancedFurnace;
+import com.avion.spatialsystems.util.EnumLevel;
 import com.avion.spatialsystems.util.WorldHelper;
 import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
@@ -40,41 +43,44 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
     protected int itemMaxBurn = -1; // Burn timer stop/reset time (relative ticks)
     protected boolean isSmelting = false;
     private BlockPos[] bound;
+    protected EnumLevel level = EnumLevel.BASIC;
 
     @Override
     public void update() {
 
         // Burn time calculation
-        if(burnTime>0) burnTime-=2;
+        if(!world.isRemote) {
+            if (burnTime > 0) burnTime -= 2;
 
-        if(canConsumeFuel()){
-            itemMaxBurn = TileEntityFurnace.getItemBurnTime(stacks.get(1))+2;
-            burnTime = itemMaxBurn;
-            stacks.get(1).shrink(1);
-            markDirty();
-        }
+            if (canConsumeFuel()) {
+                itemMaxBurn = TileEntityFurnace.getItemBurnTime(stacks.get(1)) + 2;
+                burnTime = itemMaxBurn;
+                stacks.get(1).shrink(1);
+                markDirty();
+            }
 
-        // Smelting calculation
-        boolean possible = smeltPossible();
+            // Smelting calculation
+            boolean possible = smeltPossible();
 
-        if(isSmelting) cookTime += 2;
-        if(!isSmelting && (isSmelting=possible)){
-            cookTime = 0;
-            maxCookTime = 100;
-        }
-        else if(possible && cookTime >= maxCookTime){
-            cookTime = 0;
-            isSmelting = false;
-            smeltItem();
-        }
+            if (isSmelting) cookTime += 2;
+            if (!isSmelting && (isSmelting = possible)) {
+                cookTime = 0;
+                maxCookTime = 100/(int) Math.pow(2, level.ordinal()+1);
+            } else if (possible && cookTime >= maxCookTime) {
+                cookTime = 0;
+                isSmelting = false;
+                smeltItem();
+            }
 
-        if(!possible){
-            cookTime = 0;
-            isSmelting = false;
-            markDirty();
+            if (!possible) {
+                cookTime = 1;
+                isSmelting = false;
+                markDirty();
+            }
         }
     }
 
+    public void setLevel(EnumLevel level){ this.level = level; }
     public BlockPos[] getBound(){ return bound; }
     public void bind(BlockPos[] bound){ this.bound = bound; }
     public boolean isBound(){ return bound!=null; }
@@ -151,8 +157,8 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
     @Override
     public ItemStack decrStackSize(int index, int count) {
         ItemStack stack = stacks.get(index);
-        ItemStack i = new ItemStack(stack.getItem(), Math.min(stack.getCount(), count));
-        stack.shrink(i.getCount());
+        ItemStack i = stack.copy();
+        stack.setCount(Math.min(0, stack.getCount()-count));
         markDirty();
         return i;
     }
@@ -162,7 +168,7 @@ public class TileAdvancedFurnace extends TileEntity implements IItemHandlerModif
 
     @Override
     public boolean isUsableByPlayer(EntityPlayer player) {
-        return true;
+        return world.getTileEntity(getPos()) == this && player.getDistanceSq(getPos().getX() + 0.5, getPos().getY() + 0.5,getPos().getZ() + 0.5) < 64;
     }
 
     @Override public void openInventory(EntityPlayer player) {

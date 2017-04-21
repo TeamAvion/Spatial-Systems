@@ -1,8 +1,8 @@
 package com.avion.spatialsystems.blocks;
 
 import com.avion.spatialsystems.SpatialSystems;
-import com.avion.spatialsystems.tile.TileAdvancedChest;
 import com.avion.spatialsystems.tile.TileAdvancedFurnace;
+import com.avion.spatialsystems.util.EnumLevel;
 import com.avion.spatialsystems.util.MBStruct;
 import com.avion.spatialsystems.util.WorldHelper;
 import net.minecraft.block.Block;
@@ -10,7 +10,7 @@ import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -20,12 +20,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.Rotation;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import javax.annotation.Nullable;
-import java.util.List;
 
 import static com.avion.spatialsystems.SpatialSystems.GUI_FURNACE;
 import static com.avion.spatialsystems.SpatialSystems.instance;
@@ -102,14 +99,14 @@ public class AdvancedFurnaceController extends Block {
         //List<BlockPos> l = ModBlocks.dynamicFurnace.find(worldIn, pos); // Load a dynamic size & shape
         EnumFacing[] e;
         MBStruct mb;
-        if(!worldIn.isRemote &&
-                ((e=(mb=ModBlocks.furnaceMultiBlockGrand).findStructure(worldIn, pos)).length!=0 ||
-                (e=(mb=ModBlocks.furnaceMultiBlockBig).findStructure(worldIn, pos)).length!=0 ||
-                (e=(mb=ModBlocks.furnaceMultiBlock).findStructure(worldIn, pos)).length!=0) // Static shapes
+        if(!worldIn.isRemote && (e=(mb=ModBlocks.furnaceMultiBlock).findStructure(worldIn, pos)).length!=0 // Static shapes
                 /*(l.size()==26 || l.size()==98 || l.size()==218 || l.size()==1352)*/ && !placer.isSneaking()) { // Dynamic shapes
             BlockPos[] b;
+            IBlockState s;
             WorldHelper.bindAll(worldIn, b=MBStruct.clean(mb.getMap(worldIn, pos, e[0])), pos);
-            ((TileAdvancedFurnace) worldIn.getTileEntity(pos)).bind(b);
+            TileAdvancedFurnace tile = (TileAdvancedFurnace) worldIn.getTileEntity(pos);
+            tile.bind(b);
+            tile.setLevel(EnumLevel.values()[(s = worldIn.getBlockState(WorldHelper.translate(pos, EnumFacing.DOWN))).getBlock().getMetaFromState(s)]);
         }
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
     }
@@ -119,14 +116,14 @@ public class AdvancedFurnaceController extends Block {
         //List<BlockPos> l = ModBlocks.dynamicFurnace.find(worldIn, pos); // Load a dynamic size & shape
         EnumFacing[] e;
         MBStruct mb;
-        if(!worldIn.isRemote &&
-                ((e=(mb=ModBlocks.furnaceMultiBlockGrand).findStructure(worldIn, pos)).length!=0 ||
-                (e=(mb=ModBlocks.furnaceMultiBlockBig).findStructure(worldIn, pos)).length!=0 ||
-                (e=(mb=ModBlocks.furnaceMultiBlock).findStructure(worldIn, pos)).length!=0) // Static shapes
+        if(!worldIn.isRemote && (e=(mb=ModBlocks.furnaceMultiBlock).findStructure(worldIn, pos)).length!=0 // Static shapes
                 /*(l.size()==26 || l.size()==98 || l.size()==218 || l.size()==1352)*/ && !playerIn.isSneaking()) { // Dynamic shapes
             BlockPos[] b;
+            IBlockState s;
             WorldHelper.bindAll(worldIn, b=MBStruct.clean(mb.getMap(worldIn, pos, e[0])), pos);
-            ((TileAdvancedFurnace) worldIn.getTileEntity(pos)).bind(b);
+            TileAdvancedFurnace tile = (TileAdvancedFurnace) worldIn.getTileEntity(pos);
+            tile.bind(b);
+            tile.setLevel(EnumLevel.values()[(s = worldIn.getBlockState(WorldHelper.translate(pos, EnumFacing.DOWN))).getBlock().getMetaFromState(s)]);
             playerIn.openGui(instance, GUI_FURNACE, worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }

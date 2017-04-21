@@ -15,19 +15,19 @@ public abstract class BoundTileImpl extends BoundTile{
     public BlockPos getBoundSource(){ return boundSource; }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);
-        if(compound.hasKey("boundX")) // Corner-cutting: Only checking for x coordinate since we assume the other coordinates are there then
-            boundSource = new BlockPos(compound.getInteger("boundX"), compound.getInteger("boundY"), compound.getInteger("boundZ"));
-    }
-
-    @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        if(boundSource!=null){
+        if(boundSource!=null) {
             compound.setInteger("boundX", boundSource.getX());
             compound.setInteger("boundY", boundSource.getY());
             compound.setInteger("boundZ", boundSource.getZ());
         }
         return super.writeToNBT(compound);
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+        if(compound.hasKey("boundX") && compound.hasKey("boundY") && compound.hasKey("boundZ"))
+            boundSource = new BlockPos(compound.getInteger("boundX"), compound.getInteger("boundY"), compound.getInteger("boundZ"));
     }
 }

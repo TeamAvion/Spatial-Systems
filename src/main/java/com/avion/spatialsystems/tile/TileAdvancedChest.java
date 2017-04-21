@@ -1,28 +1,29 @@
 package com.avion.spatialsystems.tile;
 
 import com.avion.spatialsystems.container.ContainerAdvancedChest;
+import com.avion.spatialsystems.util.RefHelper;
 import com.avion.spatialsystems.util.WorldHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
-
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
-//Created by Bread10 at 10:20 on 15/04/2017
-public class TileAdvancedChest extends TileEntity implements IInventory {
+public class TileAdvancedChest extends TileEntity implements IInventory, ISidedInventory{
 
-    private NonNullList<ItemStack> inventory = NonNullList.withSize(84, ItemStack.EMPTY);
+    private volatile NonNullList<ItemStack> inventory = NonNullList.withSize(54, ItemStack.EMPTY);
     protected final ArrayList<EntityPlayer> tracker = new ArrayList<EntityPlayer>();
     protected ContainerAdvancedChest pageTracker = null;
     private int currentPage = 1;
@@ -44,6 +45,15 @@ public class TileAdvancedChest extends TileEntity implements IInventory {
     @Override
     public NBTTagCompound getUpdateTag() {
         return this.writeToNBT(new NBTTagCompound());
+    }
+
+    public void setSize(int size){
+        NonNullList<ItemStack> n = NonNullList.withSize(size, ItemStack.EMPTY);
+        int min = Math.min(n.size(), inventory.size());
+        for(int i = 0; i<min; ++i) n.set(i, inventory.get(i));
+        inventory = n;
+        markDirty();
+        if(pageTracker!=null) pageTracker.setupSlots();
     }
 
     @Override
@@ -90,25 +100,33 @@ public class TileAdvancedChest extends TileEntity implements IInventory {
         return true;
     }
 
-    @Override public ItemStack getStackInSlot(int index) { return inventory.get(index); }
+    @Override public ItemStack getStackInSlot(int index) {
+        try {
+            if(TileEntity.class.isAssignableFrom(RefHelper.getCallerClass())) System.out.println(RefHelper.getCallerClass());
+            return inventory.get(index + (currentPage - 1) * 54 - (currentPage==1?0:1));
+        }catch(Exception e){
+            e.printStackTrace();
+            return ItemStack.EMPTY;
+        }
+    }
 
     @Override
     public ItemStack decrStackSize(int index, int count) {
-        ItemStack stack = inventory.get(index);
-        ItemStack i = new ItemStack(stack.getItem(), Math.min(stack.getCount(), count));
-        stack.shrink(i.getCount());
+        ItemStack stack = inventory.get(index + (currentPage - 1) * 54 - (currentPage==1?0:1));
+        ItemStack i = stack.copy();
+        stack.setCount(Math.min(0, stack.getCount()-count));
         markDirty();
         return i;
     }
 
     @Override
     public ItemStack removeStackFromSlot(int index) {
-        return decrStackSize(index, inventory.get(index).getCount());
+        return decrStackSize(index + (currentPage - 1) * 54 - (currentPage==1?0:1), inventory.get(index).getCount());
     }
 
     @Override
     public void setInventorySlotContents(int index, ItemStack stack) {
-        inventory.set(index, stack);
+        inventory.set(index + (currentPage - 1) * 54 - (currentPage==1?0:1), stack);
     }
 
     @Override
@@ -118,7 +136,7 @@ public class TileAdvancedChest extends TileEntity implements IInventory {
 
     @Override
     public boolean isUsableByPlayer(EntityPlayer player) {
-        return true;
+        return world.getTileEntity(getPos()) == this && player.getDistanceSq(getPos().getX() + 0.5, getPos().getY() + 0.5,getPos().getZ() + 0.5) < 64;
     }
 
     @Override
@@ -151,10 +169,7 @@ public class TileAdvancedChest extends TileEntity implements IInventory {
         return 0;
     }
 
-    @Override
-    public void clear() {
-        inventory.clear();
-    }
+    @Override public void clear() { inventory.clear(); }
 
     @Override
     public String getName() {
@@ -176,14 +191,34 @@ public class TileAdvancedChest extends TileEntity implements IInventory {
         //sync();
     }
 
+
+
     public void sync() {
         this.markDirty();
-        IBlockState state = this.getWorld().getBlockState(this.getPos());
-        this.getWorld().notifyBlockUpdate(this.getPos(), state, state, 3);
+        IBlockState state = getWorld().getBlockState(getPos());
+        getWorld().notifyBlockUpdate(getPos(), state, state, 3);
     }
 
     public void registerPageTracker(ContainerAdvancedChest pageTracker){
         this.pageTracker = pageTracker;
     }
 
+    @Override
+    public int[] getSlotsForFace(EnumFacing side) {
+        int[] i = new int[inventory.size()];
+        for(int j = 0; j<i.length; ++j) i[j] = inventory.get(j).getCount();
+        return i;
+    }
+
+    @Override
+    public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
+        ItemStack s = inventory.get(index);
+        return s.isEmpty() || (s.getItem() == itemStackIn.getItem() && s.getMaxStackSize() - s.getCount()>=itemStackIn.getCount());
+    }
+
+    @Override
+    public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
+        ItemStack i;
+        return !(i=inventory.get(index)).isEmpty() && i.getItem() == stack.getItem() && i.getCount()>=stack.getCount();
+    }
 }

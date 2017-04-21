@@ -1,10 +1,10 @@
 package com.avion.spatialsystems.container;
 
 import com.avion.spatialsystems.util.RefHelper;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
-
 import static com.avion.spatialsystems.tile.TileAdvancedFurnace.FIELD_TIME;
 import static com.avion.spatialsystems.tile.TileAdvancedFurnace.FIELD_MAXTIME;
 import static com.avion.spatialsystems.tile.TileAdvancedFurnace.FIELD_BURN;
@@ -51,5 +51,10 @@ public class ContainerAdvancedFurnace extends ContainerFurnace {
         if((Integer) RefHelper.getValue(name, this, ContainerFurnace.class)!=(val1=furnaceInventory.getField(val))) {
             listener.sendProgressBarUpdate(this, val, val1);
         }
+    }
+
+    @Override
+    public boolean canInteractWith(EntityPlayer par1EntityPlayer){
+        return furnaceInventory.isUsableByPlayer(par1EntityPlayer);
     }
 }

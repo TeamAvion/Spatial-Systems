@@ -1,17 +1,5 @@
 {
   "variants": {
-    "type=normal": { "model": "spatialsystems:chestblocknormal" },
-    "type=edge_x": { "model": "spatialsystems:chestblockex" },
-    "type=edge_y": { "model": "spatialsystems:chestblockey" },
-    "type=edge_z": { "model": "spatialsystems:chestblockez" },
-    "type=face": { "model": "spatialsystems:chestblockface" },
-    "type=corner_neu": { "model": "spatialsystems:chestblockcneu" },
-    "type=corner_seu": { "model": "spatialsystems:chestblockcseu" },
-    "type=corner_swu": { "model": "spatialsystems:chestblockcswu" },
-    "type=corner_nwu": { "model": "spatialsystems:chestblockcnwu" },
-    "type=corner_ned": { "model": "spatialsystems:chestblockcned" },
-    "type=corner_sed": { "model": "spatialsystems:chestblockcsed" },
-    "type=corner_swd": { "model": "spatialsystems:chestblockcswd" },
-    "type=corner_nwd": { "model": "spatialsystems:chestblockcnwd" }
+    "normal": { "model": "spatialsystems:chestblocknormal" }
   }
 }

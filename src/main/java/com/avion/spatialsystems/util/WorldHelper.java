@@ -1,6 +1,8 @@
 package com.avion.spatialsystems.util;
 
 import com.avion.spatialsystems.tile.BoundTile;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -10,9 +12,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import static com.avion.spatialsystems.util.WorldHelper.Rotate.*;
+import static net.minecraft.util.EnumFacing.*;
+import static net.minecraft.util.EnumFacing.EAST;
+import static net.minecraft.util.EnumFacing.WEST;
 
 //Created by Bread10 at 15:14 on 15/04/2017
 @SuppressWarnings("unused")
@@ -88,6 +94,23 @@ public final class WorldHelper {
             w.spawnEntity(e);
             i.setCount(0);
         }
+    }
+
+    public static BlockPos getAt(BlockPos relativeTo, EnumFacing direction){
+        return new BlockPos(relativeTo.getX()+(direction==SOUTH?-1:direction==NORTH?1:0), relativeTo.getY()+(direction==DOWN?-1:direction==UP?1:0), relativeTo.getZ()+(direction==WEST?-1:direction==EAST?1:0));
+    }
+
+    public static BlockPos translate(BlockPos from, EnumFacing... by){
+        for(EnumFacing e : by) from = getAt(from, e);
+        return from;
+    }
+
+    public static ArrayList<BlockPos> matchSurrounding(BlockPos around, IBlockAccess w, Block find, int meta){
+        IBlockState b;
+        BlockPos bp;
+        ArrayList<BlockPos> a = new ArrayList<BlockPos>();
+        for(EnumFacing e : EnumFacing.values()) if((b=w.getBlockState(bp=translate(around, e))).getBlock().equals(find) && (meta<0 || b.getBlock().getMetaFromState(b)==meta)) a.add(bp);
+        return a;
     }
 
     public enum Rotate{ LEFT, RIGHT }

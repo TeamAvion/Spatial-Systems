@@ -88,14 +88,15 @@ public class AdvancedChestController extends Block implements ITileEntityProvide
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         EnumFacing[] e;
         MBStruct mb;
-        if(!worldIn.isRemote &&
-                ((e=(mb=ModBlocks.chestMultiBlockGrand).findStructure(worldIn, pos)).length!=0 ||
+        if(((e=(mb=ModBlocks.chestMultiBlockGrand).findStructure(worldIn, pos)).length!=0 ||
                 (e=(mb=ModBlocks.chestMultiBlockBig).findStructure(worldIn, pos)).length!=0 ||
                 (e=(mb=ModBlocks.chestMultiBlock).findStructure(worldIn, pos)).length!=0) // Static shapes
                 /*(l.size()==26 || l.size()==98 || l.size()==218 || l.size()==1352)*/ && !placer.isSneaking()) { // Dynamic shapes
             BlockPos[] b;
+            TileAdvancedChest t;
             WorldHelper.bindAll(worldIn, b=MBStruct.clean(mb.getMap(worldIn, pos, e[0])), pos);
-            ((TileAdvancedChest) worldIn.getTileEntity(pos)).bind(b);
+            (t=((TileAdvancedChest) worldIn.getTileEntity(pos))).bind(b);
+            t.setSize(162 * (int) Math.pow(2, mb==ModBlocks.chestMultiBlockGrand?2:mb==ModBlocks.chestMultiBlockBig?1:0));
         }
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
     }
@@ -104,14 +105,15 @@ public class AdvancedChestController extends Block implements ITileEntityProvide
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         EnumFacing[] e;
         MBStruct mb;
-        if(!worldIn.isRemote &&
-                ((e=(mb=ModBlocks.chestMultiBlockGrand).findStructure(worldIn, pos)).length!=0 ||
+        if(((e=(mb=ModBlocks.chestMultiBlockGrand).findStructure(worldIn, pos)).length!=0 ||
                 (e=(mb=ModBlocks.chestMultiBlockBig).findStructure(worldIn, pos)).length!=0 ||
                 (e=(mb=ModBlocks.chestMultiBlock).findStructure(worldIn, pos)).length!=0) // Static shapes
                 /*(l.size()==26 || l.size()==98 || l.size()==218 || l.size()==1352)*/ && !playerIn.isSneaking()) { // Dynamic shapes
             BlockPos[] b;
+            TileAdvancedChest t;
             WorldHelper.bindAll(worldIn, b=MBStruct.clean(mb.getMap(worldIn, pos, e[0])), pos);
-            ((TileAdvancedChest) worldIn.getTileEntity(pos)).bind(b);
+            (t=((TileAdvancedChest) worldIn.getTileEntity(pos))).bind(b);
+            t.setSize(162 * (int) Math.pow(2, mb==ModBlocks.chestMultiBlockGrand?2:mb==ModBlocks.chestMultiBlockBig?1:0));
             playerIn.openGui(instance, GUI_CHEST, worldIn, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }

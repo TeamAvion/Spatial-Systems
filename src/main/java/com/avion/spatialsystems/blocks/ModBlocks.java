@@ -14,13 +14,13 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import static com.avion.spatialsystems.util.MBStruct.WLD;
 
+@SuppressWarnings("unused")
 public class ModBlocks {
 
     // Auto-injected objects
@@ -38,6 +38,9 @@ public class ModBlocks {
             return this.matchesDefault() && ((e=w.getTileEntity(p))==null || (e instanceof BoundTile && ((BoundTile) e).isBound(source)));
         }
     };
+    public static final DynamicMBStruct triggerSearch = new DynamicMBStruct()
+            .setDefaultSearchMode(DynamicMBStruct.SearchMode.CARDINAL)
+            .add(-1, FieldReference.<Block>staticFromHere("advancedChestBlock"));
     public static final MBStruct chestMultiBlock = new MBStruct()
             .addLayer(0, new MBStruct.Plane(1, 1).addPlane(PMC, 3, 3).replace(WLD, 1, 1)) // Layer 0
             .addLayer(1, new MBStruct.Plane(1, 1).addPlane(PMC, 3, 3).replace(WLD, 1, 1)) // Layer 1

@@ -5,6 +5,7 @@ import com.avion.spatialsystems.tile.BoundTileImpl;
 import com.avion.spatialsystems.tile.TileChestBinder;
 import com.avion.spatialsystems.tile.TileFurnaceBinder;
 import com.avion.spatialsystems.util.EnumType;
+import com.avion.spatialsystems.util.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
@@ -12,12 +13,17 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.avion.spatialsystems.blocks.Properties.TYPE;
 import static net.minecraft.init.Blocks.AIR;
 
@@ -29,7 +35,6 @@ public class AdvancedChestBlock extends Block {
         this.setUnlocalizedName("advancedChestBlock");
         this.setRegistryName("advancedchestblock");
         this.setCreativeTab(SpatialSystems.TAB);
-        setDefaultState(this.blockState.getBaseState().withProperty(TYPE, EnumType.NORMAL));
         this.setHarvestLevel("axe", 1);
         this.setHardness(1F);
     }
@@ -41,7 +46,7 @@ public class AdvancedChestBlock extends Block {
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        return this.getDefaultState().withProperty(TYPE, EnumType.getTypeFromValue(meta));
+        return this.getDefaultState();
     }
 
     @Nullable
@@ -55,7 +60,7 @@ public class AdvancedChestBlock extends Block {
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        return ((EnumType) state.getValue(TYPE)).getValue();
+        return 0;
     }
 
     @Override
@@ -67,17 +72,24 @@ public class AdvancedChestBlock extends Block {
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, TYPE);
+        return new BlockStateContainer(this);
     }
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         BoundTileImpl t;
-        return (t=(BoundTileImpl)worldIn.getTileEntity(pos))!=null &&
+        if((t=(BoundTileImpl)worldIn.getTileEntity(pos))!=null &&
                 t.isBound() &&
-                worldIn.getBlockState(t.getBoundSource()).getBlock().onBlockActivated(worldIn, t.getBoundSource(), state, playerIn, hand, facing, hitX, hitY, hitZ);
+                worldIn.getBlockState(t.getBoundSource()).getBlock().onBlockActivated(worldIn, t.getBoundSource(), state, playerIn, hand, facing, hitX, hitY, hitZ)) return true;
+        IBlockState bState;
+        List<BlockPos> l = ModBlocks.triggerSearch.find(worldIn, pos);
+        List<BlockPos> l1 = new ArrayList<BlockPos>();
+        for(BlockPos b : l) l1.addAll(WorldHelper.matchSurrounding(b, worldIn, ModBlocks.advancedChestController, -1));
+        for(BlockPos b : l1) if((bState=worldIn.getBlockState(b)).getBlock().onBlockActivated(worldIn, b, bState, playerIn, hand, facing, hitX, hitY, hitZ)) return true;
+        return false;
     }
 
+    /*
     public void updateBlockState(IBlockState state, World worldIn, BlockPos pos) {
         Block up = worldIn.getBlockState(pos.down()).getBlock();
         Block north = worldIn.getBlockState(pos.north()).getBlock();
@@ -139,8 +151,10 @@ public class AdvancedChestBlock extends Block {
         worldIn.notifyBlockUpdate(pos, state, state, 3);
     }
 
+*/
+
     public void resetBlockState(IBlockState state, World worldIn, BlockPos pos) {
-        state.withProperty(TYPE, EnumType.NORMAL);
+        //state.withProperty(TYPE, EnumType.NORMAL);
 
         worldIn.notifyBlockUpdate(pos, state, state, 3);
     }

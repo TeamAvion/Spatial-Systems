@@ -4,19 +4,7 @@ import net.minecraft.util.IStringSerializable;
 
 //Created by Bread10 at 04:59 on 19/04/2017
 public enum EnumType implements IStringSerializable {
-    NORMAL,
-    EDGE_X,
-    EDGE_Y,
-    EDGE_Z,
-    FACE,
-    CORNER_NEU,
-    CORNER_SEU,
-    CORNER_SWU,
-    CORNER_NWU,
-    CORNER_NED,
-    CORNER_SED,
-    CORNER_SWD,
-    CORNER_NWD;
+    CORNER, ;
 
     static {
         int i = 0;
@@ -36,7 +24,7 @@ public enum EnumType implements IStringSerializable {
                 return t;
             }
         }
-        return NORMAL;
+        return null;
     }
 
     @Override
