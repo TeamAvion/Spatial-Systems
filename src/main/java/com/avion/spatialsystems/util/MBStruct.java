@@ -1,18 +1,14 @@
 package com.avion.spatialsystems.util;
 
 import com.google.common.base.Optional;
-import javafx.util.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import scala.actors.threadpool.Arrays;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 @SuppressWarnings("all")
 public class MBStruct {

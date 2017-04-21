@@ -1,16 +1,14 @@
 package com.avion.spatialsystems.util;
 
+import com.google.common.base.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
-
 import static com.avion.spatialsystems.util.DynamicMBStruct.SearchMode.*;
 import static net.minecraft.util.EnumFacing.*;
 
@@ -19,6 +17,7 @@ import static net.minecraft.util.EnumFacing.*;
  */
 @SuppressWarnings("unused")
 public class DynamicMBStruct {
+
     protected final HashMap<Integer, Pair<ObjectReference<? extends Block>, Optional<Integer>>> search = new HashMap<>();
     protected SearchMode defaultSearchMode = CARDINAL;
     protected boolean strict = false;
@@ -59,23 +58,23 @@ public class DynamicMBStruct {
 
     public DynamicMBStruct setStrict(boolean strict){ this.strict = strict; return this; }
     public DynamicMBStruct add(int id, Block b, int meta){
-        if(!isAllowed(b, meta)) search.put(id, new Pair<>(new ImmutableReference<>(b), Optional.of(meta)));
+        if(!isAllowed(b, meta)) search.put(id, new Pair<ObjectReference<? extends Block>, Optional<Integer>>(new ImmutableReference<>(b), Optional.of(meta)));
         return this;
     }
 
     public DynamicMBStruct add(int id, Block b){
-        if(!isAllowed(b)) search.put(id, new Pair<>(new ImmutableReference<>(b), Optional.empty()));
+        if(!isAllowed(b)) search.put(id, new Pair<ObjectReference<? extends Block>, Optional<Integer>>(new ImmutableReference<>(b), Optional.<Integer>absent()));
         clearWithMeta(b);
         return this;
     }
 
     public DynamicMBStruct add(int id, ObjectReference<Block> typeRef){
-        if(!isAllowed(typeRef)) search.put(id, new Pair<>(typeRef, Optional.empty()));
+        if(!isAllowed(typeRef)) search.put(id, new Pair<ObjectReference<? extends Block>, Optional<Integer>>(typeRef, Optional.<Integer>absent()));
         return this;
     }
 
     public DynamicMBStruct add(int id, ObjectReference<Block> typeRef, int meta){
-        if(!isAllowed(typeRef)) search.put(id, new Pair<>(typeRef, Optional.of(meta)));
+        if(!isAllowed(typeRef)) search.put(id, new Pair<ObjectReference<? extends Block>, Optional<Integer>>(typeRef, Optional.of(meta)));
         return this;
     }
 
@@ -86,14 +85,14 @@ public class DynamicMBStruct {
 
     public Optional<Integer> getIdFor(Block b){
         Pair<ObjectReference<? extends Block>, Optional<Integer>> p;
-        for(Integer i : search.keySet()) if(b.equals((p=search.get(i)).getKey().get()) && !p.getValue().isPresent()) return java.util.Optional.of(i);
-        return java.util.Optional.empty();
+        for(Integer i : search.keySet()) if(b.equals((p=search.get(i)).getKey().get()) && !p.getValue().isPresent()) return Optional.of(i);
+        return Optional.absent();
     }
 
     public Optional<Integer> getIdFor(Block b, int meta){
         Pair<ObjectReference<? extends Block>, Optional<Integer>> p;
         for(Integer i : search.keySet()) if(b.equals((p=search.get(i)).getKey().get()) && p.getValue().isPresent() && p.getValue().get()==meta) return Optional.of(i);
-        return Optional.empty();
+        return Optional.absent();
     }
 
     protected void clearWithMeta(Block b){
@@ -110,7 +109,7 @@ public class DynamicMBStruct {
         purge();
         ArrayList<BlockPos> a = new ArrayList<>();
         a.add(start);
-        findAt(w, start, a, new ArrayList<>(), mode, start);
+        findAt(w, start, a, new ArrayList<Pair<Block, Integer>>(), mode, start);
         return a;
     }
 
@@ -190,4 +189,5 @@ public class DynamicMBStruct {
             return apply(w, p, source);
         }
     }
+
 }

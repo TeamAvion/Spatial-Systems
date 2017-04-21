@@ -20,9 +20,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
 import javax.annotation.Nullable;
-
 import static com.avion.spatialsystems.SpatialSystems.GUI_CHEST;
 import static com.avion.spatialsystems.SpatialSystems.instance;
 import static com.avion.spatialsystems.blocks.Properties.FACING;
