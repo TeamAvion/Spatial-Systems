@@ -3,8 +3,6 @@ package com.avion.spatialsystems.blocks;
 import com.avion.spatialsystems.SpatialSystems;
 import com.avion.spatialsystems.tile.BoundTileImpl;
 import com.avion.spatialsystems.tile.TileChestBinder;
-import com.avion.spatialsystems.tile.TileFurnaceBinder;
-import com.avion.spatialsystems.util.EnumType;
 import com.avion.spatialsystems.util.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -12,9 +10,6 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -23,9 +18,6 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.avion.spatialsystems.blocks.Properties.TYPE;
-import static net.minecraft.init.Blocks.AIR;
 
 @SuppressWarnings({"deprecation", "unused"})
 public class AdvancedChestBlock extends Block {
