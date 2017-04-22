@@ -37,20 +37,7 @@ public class ContainerAdvancedFurnace extends ContainerFurnace {
         }
 
         // Furnace-specific
-        for (IContainerListener listener : listeners) {
-            checkAndSend(listener, "cookTime", FIELD_TIME);
-            checkAndSend(listener, "totalCookTime", FIELD_MAXTIME);
-            checkAndSend(listener, "furnaceBurnTime", FIELD_MAXBURN);
-            checkAndSend(listener, "currentItemBurnTime", FIELD_BURN);
-        }
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    protected final void checkAndSend(IContainerListener listener, String name, int val){
-        int val1;
-        if((Integer) RefHelper.getValue(name, this, ContainerFurnace.class)!=(val1=furnaceInventory.getField(val))) {
-            listener.sendProgressBarUpdate(this, val, val1);
-        }
+        super.detectAndSendChanges();
     }
 
     @Override
